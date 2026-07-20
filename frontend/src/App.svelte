@@ -59,6 +59,33 @@
   let published = $state(false)
   let publishNote = $state('')
   let persistenceMode = $state('browser')
+  /** @type {'idle' | 'files_loaded' | 'started' | 'working' | 'done'} */
+  let comparePhase = $state('idle')
+  let compareStatusMsg = $state('')
+  let compareWallMs = $state(0)
+  let compareResultMs = $state(null)
+  let showInventory = $state(false)
+  let comparePulseId = null
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
+
+  function formatElapsed(ms) {
+    if (ms < 1000) return `${Math.round(ms)}ms`
+    const s = ms / 1000
+    if (s < 60) return `${s.toFixed(1)}s`
+    const m = Math.floor(s / 60)
+    const rem = Math.round(s % 60)
+    return `${m}m ${rem}s`
+  }
+
+  function clearCompareTimers() {
+    if (comparePulseId != null) {
+      clearInterval(comparePulseId)
+      comparePulseId = null
+    }
+  }
 
   function persistLite() {
     saveSession({
@@ -195,6 +222,7 @@
   }
 
   function canOpenStep(id) {
+    if (loading && comparePhase !== 'idle') return id === 'config'
     if (id === 'ingest') return true
     if (id === 'config') return stepComplete.ingest
     if (id === 'results') return !!result
@@ -279,17 +307,57 @@
   }
 
   async function compare() {
+    clearCompareTimers()
+    step = 'config'
+    showInventory = false
     loading = true
     error = ''
+    compareResultMs = null
+    compareWallMs = 0
+
+    const nA = listA.length
+    const nB = listB.length
+
+    comparePhase = 'files_loaded'
+    compareStatusMsg = `Files loaded — ${nA.toLocaleString()} in A, ${nB.toLocaleString()} in B`
+    await sleep(450)
+
+    comparePhase = 'started'
+    compareStatusMsg = 'Comparison started…'
+    await sleep(350)
+
+    const t0 = performance.now()
+    const tickWorking = () => {
+      compareWallMs = Math.round(performance.now() - t0)
+      comparePhase = 'working'
+      compareStatusMsg = `In work — scoring ${nA.toLocaleString()} × ${nB.toLocaleString()} · ${formatElapsed(compareWallMs)} elapsed`
+    }
+    tickWorking()
+    comparePulseId = setInterval(tickWorking, 5000)
+
     try {
-      result = await runCompare(listA, listB, config)
+      const data = await runCompare(listA, listB, config)
+      clearCompareTimers()
+      compareWallMs = Math.round(performance.now() - t0)
+      result = data
       selectedId = null
       filterClasses = []
       published = false
+      const serverMs = data?.summary?.elapsed_ms
+      compareResultMs = typeof serverMs === 'number' ? serverMs : compareWallMs
+      comparePhase = 'done'
+      compareStatusMsg = `Results ready — generated in ${formatElapsed(compareResultMs)}`
+      await sleep(2000)
       step = 'results'
+      comparePhase = 'idle'
+      compareStatusMsg = ''
     } catch (e) {
+      clearCompareTimers()
       error = String(e.message || e)
+      comparePhase = 'idle'
+      compareStatusMsg = ''
     } finally {
+      clearCompareTimers()
       loading = false
     }
   }
@@ -508,32 +576,32 @@
 
   {#if step === 'config'}
     <section class="config rise">
-      <div class="config-main">
+      <div class="config-main" class:dimmed={loading}>
         <h2>Matching thresholds</h2>
         <div class="presets">
           {#each presets as p}
-            <button class:on={activePreset === p.id} onclick={() => applyPreset(p.id)}>{p.name}</button>
+            <button class:on={activePreset === p.id} onclick={() => applyPreset(p.id)} disabled={loading}>{p.name}</button>
           {/each}
         </div>
         <div class="sliders">
           <label>Geo distance (m)
-            <input type="range" min="50" max="2000" step="10" bind:value={config.max_geo_distance_m} />
+            <input type="range" min="50" max="2000" step="10" bind:value={config.max_geo_distance_m} disabled={loading} />
             <span class="mono">{config.max_geo_distance_m}</span>
           </label>
           <label>Min name similarity (%)
-            <input type="range" min="0" max="100" bind:value={config.min_name_similarity} />
+            <input type="range" min="0" max="100" bind:value={config.min_name_similarity} disabled={loading} />
             <span class="mono">{config.min_name_similarity}</span>
           </label>
           <label>Min attr similarity
-            <input type="range" min="0" max="1" step="0.01" bind:value={config.min_attr_similarity} />
+            <input type="range" min="0" max="1" step="0.01" bind:value={config.min_attr_similarity} disabled={loading} />
             <span class="mono">{Number(config.min_attr_similarity).toFixed(2)}</span>
           </label>
           <label>Date tolerance (days)
-            <input type="range" min="0" max="90" bind:value={config.date_tolerance_days} />
+            <input type="range" min="0" max="90" bind:value={config.date_tolerance_days} disabled={loading} />
             <span class="mono">{config.date_tolerance_days}</span>
           </label>
           <label>Composite threshold
-            <input type="range" min="0.4" max="0.99" step="0.01" bind:value={config.composite_threshold} />
+            <input type="range" min="0.4" max="0.99" step="0.01" bind:value={config.composite_threshold} disabled={loading} />
             <span class="mono">{Number(config.composite_threshold).toFixed(2)}</span>
           </label>
         </div>
@@ -541,7 +609,7 @@
         <div class="weights">
           {#each ['geo', 'name', 'attr', 'temporal'] as w}
             <label>{w}
-              <input type="range" min="0" max="1" step="0.01" bind:value={config.weights[w]} />
+              <input type="range" min="0" max="1" step="0.01" bind:value={config.weights[w]} disabled={loading} />
               <span class="mono">{Number(config.weights[w]).toFixed(2)}</span>
             </label>
           {/each}
@@ -556,10 +624,37 @@
         {#if declineLedger.length}
           <div class="ledger-chip">{declineLedger.length} prior keep-separate on file</div>
         {/if}
-        <button class="cta pulse-cta" onclick={compare} disabled={loading}>
-          {loading ? 'Running…' : 'Run comparison'}
+
+        {#if comparePhase !== 'idle'}
+          <div class="compare-progress" role="status" aria-live="polite">
+            <ol class="progress-track">
+              <li class:done={['files_loaded', 'started', 'working', 'done'].includes(comparePhase)} class:active={comparePhase === 'files_loaded'}>
+                Files loaded
+              </li>
+              <li class:done={['started', 'working', 'done'].includes(comparePhase)} class:active={comparePhase === 'started'}>
+                Comparison started
+              </li>
+              <li class:done={['working', 'done'].includes(comparePhase)} class:active={comparePhase === 'working'}>
+                In work
+                {#if comparePhase === 'working'}
+                  <span class="pulse-dot" aria-hidden="true"></span>
+                {/if}
+              </li>
+              <li class:done={comparePhase === 'done'} class:active={comparePhase === 'done'}>
+                Results ready
+              </li>
+            </ol>
+            <p class="progress-msg mono">{compareStatusMsg}</p>
+            {#if comparePhase === 'done' && compareResultMs != null}
+              <p class="progress-hold">Showing generation time · advancing to Results in 2s</p>
+            {/if}
+          </div>
+        {/if}
+
+        <button class="cta pulse-cta" onclick={compare} disabled={loading || !listA.length || !listB.length}>
+          {loading ? (comparePhase === 'done' ? 'Opening results…' : 'Comparing…') : 'Run comparison'}
         </button>
-        <button class="ghost-link" onclick={() => (step = 'ingest')}>← Back to Ingest</button>
+        <button class="ghost-link" onclick={() => (step = 'ingest')} disabled={loading}>← Back to Ingest</button>
       </aside>
     </section>
   {/if}
@@ -583,57 +678,67 @@
             <span class="kpi-label">{k.label}</span>
           </button>
         {/each}
-        <div class="kpi meta-kpi">
-          <span class="kpi-count mono">{result.summary.elapsed_ms?.toFixed?.(0) ?? '—'}ms</span>
-          <span class="kpi-label">engine</span>
-        </div>
+        <button
+          type="button"
+          class="kpi overview-kpi"
+          class:on={showInventory}
+          onclick={() => (showInventory = !showInventory)}
+          aria-expanded={showInventory}
+          aria-controls="merge-overview-panel"
+        >
+          <span class="kpi-count">{showInventory ? 'Hide' : 'Open'}</span>
+          <span class="kpi-label">Merge overview</span>
+        </button>
       </div>
 
-      <div class="inventory-panel rise">
-        <div class="inv-head">
-          <h3>Category inventory</h3>
-          <span class="muted">Compare source counts vs working merge — inflation may mean unresolved duplicates</span>
-        </div>
-        {#if inventory.alerts.length}
-          <div class="inv-alerts">
-            {#each inventory.alerts as a}
-              <span class="flag {a.flag}">{a.category}: {flagLabel(a.flag)} (working {a.working} / max source {a.ceiling})</span>
-            {/each}
+      {#if showInventory}
+        <div class="inventory-panel rise" id="merge-overview-panel">
+          <div class="inv-head">
+            <h3>Category inventory</h3>
+            <button type="button" class="ghost-link inv-close" onclick={() => (showInventory = false)}>Close</button>
           </div>
-        {/if}
-        <table>
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Source A</th>
-              <th>Source B</th>
-              <th>Working merge</th>
-              <th>Projected if auto-merge</th>
-              <th>Signal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each inventory.rows as r}
-              <tr class:warn={!!r.flag}>
-                <td>{r.category}</td>
-                <td class="mono">{r.list_a}</td>
-                <td class="mono">{r.list_b}</td>
-                <td class="mono">{r.working}</td>
-                <td class="mono">{r.projected}</td>
-                <td>{r.flag ? flagLabel(r.flag) : '—'}</td>
+          <p class="muted inv-blurb">Compare source counts vs working merge — inflation may mean unresolved duplicates</p>
+          {#if inventory.alerts.length}
+            <div class="inv-alerts">
+              {#each inventory.alerts as a}
+                <span class="flag {a.flag}">{a.category}: {flagLabel(a.flag)} (working {a.working} / max source {a.ceiling})</span>
+              {/each}
+            </div>
+          {/if}
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Source A</th>
+                <th>Source B</th>
+                <th>Working merge</th>
+                <th>Projected if auto-merge</th>
+                <th>Signal</th>
               </tr>
-            {/each}
-            <tr class="totals">
-              <td>Total</td>
-              <td class="mono">{inventory.totals.list_a}</td>
-              <td class="mono">{inventory.totals.list_b}</td>
-              <td class="mono">{inventory.totals.working}</td>
-              <td class="mono">{inventory.totals.projected}</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {#each inventory.rows as r}
+                <tr class:warn={!!r.flag}>
+                  <td>{r.category}</td>
+                  <td class="mono">{r.list_a}</td>
+                  <td class="mono">{r.list_b}</td>
+                  <td class="mono">{r.working}</td>
+                  <td class="mono">{r.projected}</td>
+                  <td>{r.flag ? flagLabel(r.flag) : '—'}</td>
+                </tr>
+              {/each}
+              <tr class="totals">
+                <td>Total</td>
+                <td class="mono">{inventory.totals.list_a}</td>
+                <td class="mono">{inventory.totals.list_b}</td>
+                <td class="mono">{inventory.totals.working}</td>
+                <td class="mono">{inventory.totals.projected}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      {/if}
 
       <div class="toolbar">
         <input type="search" placeholder="Search names…" bind:value={search} />
@@ -1130,6 +1235,86 @@
     line-height: 1.45;
     font-size: 0.9rem;
   }
+  .config-main.dimmed {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .compare-progress {
+    margin: 0.85rem 0 1rem;
+    padding: 0.75rem 0.8rem;
+    border: 1px solid rgba(62, 146, 165, 0.35);
+    border-radius: 5px;
+    background: rgba(8, 28, 36, 0.65);
+  }
+  .progress-track {
+    list-style: none;
+    margin: 0 0 0.65rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .progress-track li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--gray);
+    position: relative;
+    padding-left: 1.1rem;
+  }
+  .progress-track li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--line);
+  }
+  .progress-track li.done {
+    color: var(--paper-dim);
+  }
+  .progress-track li.done::before {
+    background: var(--teal);
+  }
+  .progress-track li.active {
+    color: var(--paper);
+    font-weight: 600;
+  }
+  .progress-track li.active::before {
+    background: var(--amber);
+    box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.25);
+  }
+  .pulse-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--amber);
+    animation: pulse-dot 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(0.85);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+  }
+  .progress-msg {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--teal);
+    line-height: 1.4;
+  }
+  .progress-hold {
+    margin: 0.45rem 0 0;
+    font-size: 0.72rem;
+    color: var(--amber);
+  }
   .ledger-chip {
     display: inline-block;
     margin: 0.6rem 0;
@@ -1192,8 +1377,31 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
+  .overview-kpi {
+    border-left-color: var(--teal);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .overview-kpi:hover,
+  .overview-kpi.on {
+    border-color: rgba(62, 146, 165, 0.55);
+    border-left-color: var(--amber);
+    background: rgba(62, 146, 165, 0.12);
+  }
+  .overview-kpi .kpi-count {
+    font-size: 0.95rem;
+    color: var(--teal);
+  }
   .inventory-panel {
     margin-bottom: 0.85rem;
+  }
+  .inv-blurb {
+    margin: 0.35rem 0 0;
+    font-size: 0.8rem;
+  }
+  .inv-close {
+    margin-top: 0;
+    font-size: 0.78rem;
   }
   .inv-head {
     display: flex;
