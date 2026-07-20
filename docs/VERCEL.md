@@ -53,8 +53,9 @@ Requires a Vercel account login (`vercel login`) or `VERCEL_TOKEN`.
 |------|--------|
 | Node install + `vite build` | `vercel.json` `buildCommand` / `installCommand` |
 | Static assets | Copied to `public/` (CDN) |
-| Python deps | `pyproject.toml` (`requires-python` + dependencies); runtime **3.12** via `.python-version` |
+| Python deps | `pip install .` from `pyproject.toml` (runtime **3.12** via `.python-version`) |
 | ASGI entry | `api.index:app` (`[tool.vercel] entrypoint`) |
+| `/api/*` routing | Rewrite `/api/(.*)` → `/api/index` so nested paths hit FastAPI (not only `/api`) |
 | Demo fixtures | Bundled via `functions.api/index.py.includeFiles` |
 | SPA fallback | Rewrite non-`/api/*` → `/index.html` |
 
