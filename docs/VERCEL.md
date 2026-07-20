@@ -11,24 +11,54 @@ The demo is designed for **multi-user, shared hosting without a shared history d
 
 Users on different machines do **not** see each other’s keep-separate history. That is intentional for the public demo.
 
-## Deploy
+## Deploy (GitHub → Vercel) — recommended
+
+1. Push `main` to [mowgli42/fuzzy-reconciler](https://github.com/mowgli42/fuzzy-reconciler) (already the deploy branch).
+2. In [Vercel](https://vercel.com/new): **Add New Project** → Import the GitHub repo.
+3. Leave settings at defaults from `vercel.json`:
+   - **Root Directory:** repository root (`.`)
+   - **Build Command:** from `vercel.json` (frontend → `public/`)
+   - **Output Directory:** `public`
+   - **Install Command:** from `vercel.json`
+4. No environment variables required for the demo.
+5. Deploy. Production URL will serve UI + `/api/*` same-origin.
+
+After the first import, every push to `main` redeploys automatically.
+
+### Post-deploy smoke checks
 
 ```bash
-# From repo root (Vercel CLI)
-npm i -g vercel
-vercel          # preview
-vercel --prod   # production
+curl -s https://YOUR_PROJECT.vercel.app/api/health
+# expect: {"status":"ok",...,"vercel":true,"persistence":"browser"}
+
+curl -s https://YOUR_PROJECT.vercel.app/api/demo/sample | head -c 120
+# open the site → Load sample → Configure → Run comparison → Results
 ```
 
-Or connect the GitHub repo in the Vercel dashboard (root directory = repo root). Build settings are in `vercel.json`.
+## Deploy (CLI)
 
-### Required
+```bash
+# From repo root
+npm i -g vercel   # or: npx vercel
+vercel link       # once — bind to the Vercel project / team
+vercel            # preview
+vercel --prod     # production
+```
 
-- Node for the frontend build
-- Python 3.11+ runtime (Vercel installs from `pyproject.toml`)
-- `fixtures/small_demo.json` included via `functions.api/index.py.includeFiles`
+Requires a Vercel account login (`vercel login`) or `VERCEL_TOKEN`.
 
-### Optional env
+## What the build does
+
+| Step | Source |
+|------|--------|
+| Node install + `vite build` | `vercel.json` `buildCommand` / `installCommand` |
+| Static assets | Copied to `public/` (CDN) |
+| Python deps | `pyproject.toml` (`requires-python` + dependencies); runtime **3.12** via `.python-version` |
+| ASGI entry | `api.index:app` (`[tool.vercel] entrypoint`) |
+| Demo fixtures | Bundled via `functions.api/index.py.includeFiles` |
+| SPA fallback | Rewrite non-`/api/*` → `/index.html` |
+
+## Optional env
 
 | Variable | Purpose |
 |----------|---------|
@@ -40,6 +70,12 @@ Or connect the GitHub repo in the Vercel dashboard (root directory = repo root).
 ```bash
 make backend          # :8010 — routes under /api/*
 cd frontend && npm run dev   # :5173 — proxies /api → :8010
+```
+
+Simulate the Vercel frontend build locally:
+
+```bash
+cd frontend && npm ci && npm run build && rm -rf ../public && mkdir -p ../public && cp -R dist/* ../public/
 ```
 
 ## Persistence modes (UI)

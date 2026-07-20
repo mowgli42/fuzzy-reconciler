@@ -62,8 +62,10 @@ make test
 
 ### Vercel demo
 
+`main` is deploy-ready. Import the GitHub repo in the [Vercel dashboard](https://vercel.com/new) (root = repo root; settings come from `vercel.json`), or:
+
 ```bash
-vercel --prod
+vercel link && vercel --prod
 ```
 
 Same-origin UI + `/api/*` serverless FastAPI. **History (declines / session) stays in each visitor’s browser** — no shared database for the multi-user demo. Details: [`docs/VERCEL.md`](docs/VERCEL.md).
