@@ -12,6 +12,24 @@ export async function fetchDemo() {
   return json(await fetch(`${BASE}/demo/sample`))
 }
 
+export async function fetchDemoIngestPreview() {
+  return json(await fetch(`${BASE}/demo/ingest-preview`))
+}
+
+export async function ingestFiles(fileA, fileB) {
+  const form = new FormData()
+  if (fileA) form.append('list_a_file', fileA)
+  if (fileB) form.append('list_b_file', fileB)
+  return json(await fetch(`${BASE}/ingest`, { method: 'POST', body: form }))
+}
+
+export async function ingestOneSide(side, file) {
+  const form = new FormData()
+  if (side === 'A') form.append('list_a_file', file)
+  else form.append('list_b_file', file)
+  return json(await fetch(`${BASE}/ingest`, { method: 'POST', body: form }))
+}
+
 export async function fetchPresets() {
   return json(await fetch(`${BASE}/presets`))
 }

@@ -116,6 +116,19 @@ class CompareResult(BaseModel):
     config: MatchConfig
 
 
+class IngestSideMetrics(BaseModel):
+    total_rows: int = 0
+    column_count: int = 0
+    geo_valid: int = 0
+    geo_missing: int = 0
+    named: int = 0
+    missing_name: int = 0
+    with_analyzed_at: int = 0
+    warning_count: int = 0
+    categories: dict[str, int] = Field(default_factory=dict)
+    mapped_fields: dict[str, str] = Field(default_factory=dict)
+
+
 class IngestPreview(BaseModel):
     list_label: str
     row_count: int
@@ -123,6 +136,10 @@ class IngestPreview(BaseModel):
     preview_rows: list[dict[str, Any]]
     entities: list[Entity]
     validation_warnings: list[str] = Field(default_factory=list)
+    source_format: str | None = None
+    source_filename: str | None = None
+    detected_mapping: dict[str, str] = Field(default_factory=dict)
+    metrics: IngestSideMetrics | None = None
 
 
 class IngestResponse(BaseModel):

@@ -2,12 +2,14 @@
   import { onMount } from 'svelte'
   import ResultsMap from './lib/ResultsMap.svelte'
   import DetailPanel from './lib/DetailPanel.svelte'
+  import SourceIngestCard from './lib/SourceIngestCard.svelte'
   import {
     CLASS_COLORS,
     CLASS_LABELS,
     defaultConfig,
-    fetchDemo,
+    fetchDemoIngestPreview,
     fetchPresets,
+    ingestOneSide,
     runCompare,
   } from './lib/api.js'
   import { buildInventory } from './lib/inventory.js'
@@ -31,7 +33,11 @@
   let error = $state('')
   let listA = $state([])
   let listB = $state([])
+  let previewA = $state(null)
+  let previewB = $state(null)
   let meta = $state({})
+  let pendingFileA = $state(null)
+  let pendingFileB = $state(null)
   let presets = $state([])
   let activePreset = $state('facility-loose')
   let config = $state(defaultConfig())
@@ -54,8 +60,15 @@
     }
   })
 
+  let ingestReady = $derived(
+    !!previewA?.row_count &&
+      !!previewB?.row_count &&
+      (previewA.metrics?.geo_valid ?? 0) > 0 &&
+      (previewB.metrics?.geo_valid ?? 0) > 0,
+  )
+
   let stepComplete = $derived({
-    ingest: listA.length > 0 && listB.length > 0,
+    ingest: ingestReady,
     config: !!result,
     results: Object.keys(decisions).length > 0 || published,
     merge: published,
@@ -125,19 +138,69 @@
     return false
   }
 
+  function applyPreviewPayload(data) {
+    previewA = data.list_a
+    previewB = data.list_b
+    listA = data.list_a.entities || []
+    listB = data.list_b.entities || []
+    meta = {
+      counts: { list_a: data.list_a.row_count, list_b: data.list_b.row_count },
+      formats: {
+        a: data.list_a.source_format,
+        b: data.list_b.source_format,
+      },
+    }
+    published = false
+    decisions = {}
+    workingSet = []
+    result = null
+  }
+
   async function loadSample() {
     loading = true
     error = ''
     try {
-      const data = await fetchDemo()
-      listA = data.list_a
-      listB = data.list_b
-      meta = data.meta || {}
+      const data = await fetchDemoIngestPreview()
+      applyPreviewPayload(data)
+      pendingFileA = null
+      pendingFileB = null
+      step = 'ingest'
+    } catch (e) {
+      error = String(e.message || e)
+    } finally {
+      loading = false
+    }
+  }
+
+  async function onSourceFile(side, file) {
+    loading = true
+    error = ''
+    try {
+      const data = await ingestOneSide(side, file)
+      if (side === 'A') {
+        previewA = data.list_a
+        listA = data.list_a.entities || []
+        pendingFileA = file
+      } else {
+        previewB = data.list_b
+        listB = data.list_b.entities || []
+        pendingFileB = file
+      }
+      meta = {
+        counts: {
+          list_a: previewA?.row_count || 0,
+          list_b: previewB?.row_count || 0,
+        },
+        formats: {
+          a: previewA?.source_format,
+          b: previewB?.source_format,
+        },
+      }
       published = false
       decisions = {}
       workingSet = []
       result = null
-      step = 'config'
+      step = 'ingest'
     } catch (e) {
       error = String(e.message || e)
     } finally {
@@ -287,10 +350,6 @@
       }))
   }
 
-  function previewRows(list) {
-    return list.slice(0, 6)
-  }
-
   function flagLabel(flag) {
     if (flag === 'inflation') return 'Over-count risk'
     if (flag === 'deflation') return 'Under-merge'
@@ -332,49 +391,39 @@
   {#if step === 'ingest'}
     <section class="ingest rise">
       <div class="hero-copy">
-        <h2>Ingest source lists for reconciliation</h2>
+        <h2>Ingest and verify source lists</h2>
         <p>
-          Load two entity inventories sharing a common schema. Sample AO data exercises temporal updates
-          and nearby assets that were never linked at import.
+          Stage Source A and Source B, then inspect totals and the first rows before any comparison.
+          Supported today: CSV, TSV, JSON, JSONL, GeoJSON with alias + light regex header mapping — not
+          full custom regex importers (those can be added as mapping presets later).
         </p>
         <button class="cta pulse-cta" onclick={loadSample} disabled={loading}>
           {loading ? 'Loading…' : 'Load sample inventories'}
         </button>
       </div>
+
       <div class="drop-grid">
-        <div class="drop">
-          <h3>Source A</h3>
-          <p class="muted">{listA.length ? `${listA.length} records staged` : 'Awaiting inventory A (CSV / JSON)'}</p>
-          {#if listA.length}
-            <table>
-              <thead><tr><th>name</th><th>category</th><th>lat</th></tr></thead>
-              <tbody>
-                {#each previewRows(listA) as row}
-                  <tr><td>{row.name}</td><td>{row.category}</td><td class="mono">{row.lat?.toFixed?.(4) ?? row.lat}</td></tr>
-                {/each}
-              </tbody>
-            </table>
-          {/if}
-        </div>
-        <div class="drop">
-          <h3>Source B</h3>
-          <p class="muted">{listB.length ? `${listB.length} records staged` : 'Awaiting inventory B'}</p>
-          {#if listB.length}
-            <table>
-              <thead><tr><th>name</th><th>category</th><th>lat</th></tr></thead>
-              <tbody>
-                {#each previewRows(listB) as row}
-                  <tr><td>{row.name}</td><td>{row.category}</td><td class="mono">{row.lat?.toFixed?.(4) ?? row.lat}</td></tr>
-                {/each}
-              </tbody>
-            </table>
-          {/if}
-        </div>
+        <SourceIngestCard label="Source A" preview={previewA} onfile={(f) => onSourceFile('A', f)} />
+        <SourceIngestCard label="Source B" preview={previewB} onfile={(f) => onSourceFile('B', f)} />
       </div>
-      {#if listA.length}
-        <div class="footer-actions">
-          <span class="muted mono">{meta.counts ? `A=${meta.counts.list_a} · B=${meta.counts.list_b}` : ''}</span>
-          <button class="primary" onclick={() => (step = 'config')}>Advance to Configure</button>
+
+      {#if previewA?.row_count || previewB?.row_count}
+        <div class="verify-bar">
+          <div>
+            <strong>Verification</strong>
+            <p class="muted">
+              A: {previewA?.row_count || 0} rows
+              ({previewA?.metrics?.geo_valid ?? 0} geo-valid) ·
+              B: {previewB?.row_count || 0} rows
+              ({previewB?.metrics?.geo_valid ?? 0} geo-valid)
+              {#if !ingestReady}
+                — both sides need geo-valid rows before Configure
+              {/if}
+            </p>
+          </div>
+          <button class="primary" disabled={!ingestReady} onclick={() => (step = 'config')}>
+            Data looks correct — advance to Configure
+          </button>
         </div>
       {/if}
     </section>
@@ -858,16 +907,6 @@
       grid-template-columns: 1fr;
     }
   }
-  .drop {
-    background: rgba(16, 40, 51, 0.75);
-    border: 1px dashed var(--line);
-    border-radius: 6px;
-    padding: 1rem;
-    min-height: 180px;
-  }
-  .drop h3 {
-    margin-bottom: 0.35rem;
-  }
   .mono {
     font-family: var(--font-mono);
   }
@@ -896,6 +935,22 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 1rem;
+  }
+  .verify-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--teal);
+    border-radius: 4px;
+    background: rgba(16, 40, 51, 0.85);
+  }
+  .verify-bar p {
+    margin: 0.2rem 0 0;
   }
   .primary {
     background: var(--teal);
