@@ -10,8 +10,23 @@
     fetchPresets,
     runCompare,
   } from './lib/api.js'
+  import { buildInventory } from './lib/inventory.js'
+  import {
+    declineTrendByCategory,
+    findPriorDecline,
+    loadDeclineLedger,
+    recordDecline,
+    removeDecline,
+  } from './lib/ledger.js'
 
-  let step = $state('ingest') // ingest | config | results | master
+  const STEPS = [
+    { id: 'ingest', label: 'Ingest' },
+    { id: 'config', label: 'Configure' },
+    { id: 'results', label: 'Results' },
+    { id: 'merge', label: 'Merge' },
+  ]
+
+  let step = $state('ingest')
   let loading = $state(false)
   let error = $state('')
   let listA = $state([])
@@ -24,10 +39,14 @@
   let selectedId = $state(null)
   let filterClasses = $state([])
   let search = $state('')
-  let decisions = $state({}) // pair_id -> { action, notes, at }
-  let master = $state([])
+  let decisions = $state({})
+  let workingSet = $state([])
+  let declineLedger = $state([])
+  let published = $state(false)
+  let publishNote = $state('')
 
   onMount(async () => {
+    declineLedger = loadDeclineLedger()
     try {
       presets = await fetchPresets()
     } catch (e) {
@@ -35,52 +54,49 @@
     }
   })
 
-  async function loadDemo() {
-    loading = true
-    error = ''
-    try {
-      const data = await fetchDemo()
-      listA = data.list_a
-      listB = data.list_b
-      meta = data.meta || {}
-      step = 'config'
-    } catch (e) {
-      error = String(e.message || e)
-    } finally {
-      loading = false
-    }
-  }
+  let stepComplete = $derived({
+    ingest: listA.length > 0 && listB.length > 0,
+    config: !!result,
+    results: Object.keys(decisions).length > 0 || published,
+    merge: published,
+  })
 
-  function applyPreset(id) {
-    activePreset = id
-    const p = presets.find((x) => x.id === id)
-    if (p?.config) {
-      config = structuredClone(p.config)
-    }
-  }
+  let pendingCount = $derived(
+    result ? result.matches.filter((m) => !decisions[m.pair_id]).length : 0,
+  )
 
-  async function compare() {
-    loading = true
-    error = ''
-    try {
-      result = await runCompare(listA, listB, config)
-      selectedId = null
-      filterClasses = []
-      step = 'results'
-    } catch (e) {
-      error = String(e.message || e)
-    } finally {
-      loading = false
-    }
-  }
+  let decidedCount = $derived(Object.keys(decisions).length)
+
+  let keepSeparateCount = $derived(
+    Object.values(decisions).filter((d) => d.action === 'keep_separate').length,
+  )
+
+  let inventory = $derived(
+    buildInventory({
+      listA,
+      listB,
+      matches: result?.matches || [],
+      decisions,
+      workingSet,
+    }),
+  )
+
+  let declineTrend = $derived(declineTrendByCategory(declineLedger))
 
   let selectedPair = $derived(result?.matches?.find((m) => m.pair_id === selectedId) ?? null)
+
+  let selectedPrior = $derived(
+    selectedPair ? findPriorDecline(selectedPair, declineLedger) : null,
+  )
 
   let filteredMatches = $derived.by(() => {
     if (!result) return []
     let rows = result.matches.map((m) => {
       const d = decisions[m.pair_id]
-      return d ? { ...m, classification: mapAction(d.action), notes: d.notes } : m
+      const prior = findPriorDecline(m, declineLedger)
+      return d
+        ? { ...m, classification: mapAction(d.action), notes: d.notes, priorDecline: prior }
+        : { ...m, priorDecline: prior }
     })
     if (filterClasses.length) rows = rows.filter((m) => filterClasses.includes(m.classification))
     if (search.trim()) {
@@ -95,10 +111,66 @@
     return rows
   })
 
+  function stepStatus(id) {
+    if (step === id) return 'active'
+    if (stepComplete[id]) return 'complete'
+    return 'pending'
+  }
+
+  function canOpenStep(id) {
+    if (id === 'ingest') return true
+    if (id === 'config') return stepComplete.ingest
+    if (id === 'results') return !!result
+    if (id === 'merge') return !!result
+    return false
+  }
+
+  async function loadSample() {
+    loading = true
+    error = ''
+    try {
+      const data = await fetchDemo()
+      listA = data.list_a
+      listB = data.list_b
+      meta = data.meta || {}
+      published = false
+      decisions = {}
+      workingSet = []
+      result = null
+      step = 'config'
+    } catch (e) {
+      error = String(e.message || e)
+    } finally {
+      loading = false
+    }
+  }
+
+  function applyPreset(id) {
+    activePreset = id
+    const p = presets.find((x) => x.id === id)
+    if (p?.config) config = structuredClone(p.config)
+  }
+
+  async function compare() {
+    loading = true
+    error = ''
+    try {
+      result = await runCompare(listA, listB, config)
+      selectedId = null
+      filterClasses = []
+      published = false
+      step = 'results'
+    } catch (e) {
+      error = String(e.message || e)
+    } finally {
+      loading = false
+    }
+  }
+
   function mapAction(action) {
     if (action === 'confirm_match') return 'confirmed_match'
     if (action === 'confirm_temporal') return 'confirmed_temporal'
-    if (action === 'mark_distinct') return 'marked_distinct'
+    if (action === 'keep_separate' || action === 'mark_distinct') return 'marked_distinct'
     return action
   }
 
@@ -107,12 +179,18 @@
     else filterClasses = [...filterClasses, c]
   }
 
-  function decide(pairId, action, notes) {
+  function commitDisposition(pairId, action, notes) {
     const pair = result.matches.find((m) => m.pair_id === pairId)
     if (!pair) return
     const at = new Date().toISOString()
-    decisions = { ...decisions, [pairId]: { action, notes, at } }
-    if (action !== 'mark_distinct') {
+    const normalized = action === 'mark_distinct' ? 'keep_separate' : action
+    decisions = { ...decisions, [pairId]: { action: normalized, notes, at } }
+
+    if (normalized === 'keep_separate') {
+      declineLedger = recordDecline(pair, notes)
+      workingSet = workingSet.filter((x) => x._pair_id !== pairId)
+    } else {
+      declineLedger = removeDecline(pair)
       const merged = {
         id: pair.entity_a.id,
         name: pair.entity_a.name || pair.entity_b.name,
@@ -121,7 +199,7 @@
         analyzed_at: pair.entity_b.analyzed_at || pair.entity_a.analyzed_at,
         category: pair.entity_a.category || pair.entity_b.category,
         attributes: { ...pair.entity_a.attributes, ...pair.entity_b.attributes },
-        _match_classification: mapAction(action),
+        _match_classification: mapAction(normalized),
         _composite_score: pair.scores.composite_score,
         _source_lists: 'A+B',
         _pair_id: pairId,
@@ -132,33 +210,43 @@
         _geo_distance_m: pair.scores.geo_distance_m,
         _date_diff_days: pair.scores.date_diff_days,
       }
-      master = [...master.filter((x) => x._pair_id !== pairId), merged]
-    } else {
-      master = master.filter((x) => x._pair_id !== pairId)
+      workingSet = [...workingSet.filter((x) => x._pair_id !== pairId), merged]
     }
   }
 
-  function exportMasterCsv() {
-    if (!master.length) return
-    const cols = Object.keys(master[0])
+  function goMerge() {
+    step = 'merge'
+  }
+
+  function publishWorkingSet() {
+    published = true
+    publishNote = `Published ${new Date().toLocaleString()} · ${workingSet.length} merged · ${keepSeparateCount} kept separate`
+  }
+
+  function exportWorkingCsv() {
+    if (!workingSet.length) return
+    const cols = Object.keys(workingSet[0])
     const lines = [cols.join(',')]
-    for (const row of master) {
+    for (const row of workingSet) {
       lines.push(cols.map((c) => csvEscape(row[c])).join(','))
     }
-    downloadText(lines.join('\n'), 'reconciled-master.csv', 'text/csv')
+    downloadText(lines.join('\n'), 'working-merge-set.csv', 'text/csv')
   }
 
-  function exportResultsJson() {
+  function exportPackage() {
     if (!result) return
     const payload = {
       summary: result.summary,
       config: result.config,
+      inventory,
       matches: filteredMatches,
       decisions,
-      master,
+      working_set: workingSet,
+      decline_ledger: declineLedger,
+      published,
       exported_at: new Date().toISOString(),
     }
-    downloadText(JSON.stringify(payload, null, 2), 'fuzzy-reconciler-results.json', 'application/json')
+    downloadText(JSON.stringify(payload, null, 2), 'reconcile-package.json', 'application/json')
   }
 
   function csvEscape(v) {
@@ -191,11 +279,23 @@
     ]
     return order
       .filter((k) => counts[k] != null)
-      .map((k) => ({ key: k, count: counts[k], label: CLASS_LABELS[k] || k.replace(/_/g, ' '), color: CLASS_COLORS[k] || '#7a93a0' }))
+      .map((k) => ({
+        key: k,
+        count: counts[k],
+        label: CLASS_LABELS[k] || k.replace(/_/g, ' '),
+        color: CLASS_COLORS[k] || '#7a93a0',
+      }))
   }
 
   function previewRows(list) {
     return list.slice(0, 6)
+  }
+
+  function flagLabel(flag) {
+    if (flag === 'inflation') return 'Over-count risk'
+    if (flag === 'deflation') return 'Under-merge'
+    if (flag === 'watch') return 'Watch'
+    return ''
   }
 </script>
 
@@ -205,13 +305,21 @@
       <div class="mark" aria-hidden="true"></div>
       <div>
         <h1>Fuzzy Reconciler</h1>
-        <p>Temporal variants · spatial proximity · auditable merge</p>
+        <p>Operational entity reconciliation · temporal · spatial · auditable merge</p>
       </div>
     </div>
-    <nav class="steps">
-      {#each [['ingest', 'Ingest'], ['config', 'Configure'], ['results', 'Results'], ['master', 'Master']] as [id, label]}
-        <button class:active={step === id} onclick={() => (step = id)} disabled={id !== 'ingest' && !listA.length}>
-          {label}
+    <nav class="steps" aria-label="Workflow progress">
+      {#each STEPS as s}
+        <button
+          class="step"
+          class:active={stepStatus(s.id) === 'active'}
+          class:complete={stepStatus(s.id) === 'complete'}
+          class:pending={stepStatus(s.id) === 'pending'}
+          onclick={() => canOpenStep(s.id) && (step = s.id)}
+          disabled={!canOpenStep(s.id)}
+        >
+          <span class="step-dot" aria-hidden="true"></span>
+          {s.label}
         </button>
       {/each}
     </nav>
@@ -224,18 +332,19 @@
   {#if step === 'ingest'}
     <section class="ingest rise">
       <div class="hero-copy">
-        <h2>Compare two entity lists that should have stayed linked</h2>
+        <h2>Ingest source lists for reconciliation</h2>
         <p>
-          Load controlled demo POIs around the Space Coast AO — exact matches, temporal updates, and nearby facilities with name drift.
+          Load two entity inventories sharing a common schema. Sample AO data exercises temporal updates
+          and nearby assets that were never linked at import.
         </p>
-        <button class="cta pulse-cta" onclick={loadDemo} disabled={loading}>
-          {loading ? 'Loading…' : 'Load Demo Data'}
+        <button class="cta pulse-cta" onclick={loadSample} disabled={loading}>
+          {loading ? 'Loading…' : 'Load sample inventories'}
         </button>
       </div>
       <div class="drop-grid">
         <div class="drop">
-          <h3>List A</h3>
-          <p class="muted">{listA.length ? `${listA.length} entities ready` : 'CSV / JSON upload next — demo bypasses mapping'}</p>
+          <h3>Source A</h3>
+          <p class="muted">{listA.length ? `${listA.length} records staged` : 'Awaiting inventory A (CSV / JSON)'}</p>
           {#if listA.length}
             <table>
               <thead><tr><th>name</th><th>category</th><th>lat</th></tr></thead>
@@ -248,8 +357,8 @@
           {/if}
         </div>
         <div class="drop">
-          <h3>List B</h3>
-          <p class="muted">{listB.length ? `${listB.length} entities ready` : 'Awaiting second list'}</p>
+          <h3>Source B</h3>
+          <p class="muted">{listB.length ? `${listB.length} records staged` : 'Awaiting inventory B'}</p>
           {#if listB.length}
             <table>
               <thead><tr><th>name</th><th>category</th><th>lat</th></tr></thead>
@@ -265,7 +374,7 @@
       {#if listA.length}
         <div class="footer-actions">
           <span class="muted mono">{meta.counts ? `A=${meta.counts.list_a} · B=${meta.counts.list_b}` : ''}</span>
-          <button class="primary" onclick={() => (step = 'config')}>Continue to Configuration</button>
+          <button class="primary" onclick={() => (step = 'config')}>Advance to Configure</button>
         </div>
       {/if}
     </section>
@@ -274,7 +383,7 @@
   {#if step === 'config'}
     <section class="config rise">
       <div class="config-main">
-        <h2>Matching parameters</h2>
+        <h2>Matching thresholds</h2>
         <div class="presets">
           {#each presets as p}
             <button class:on={activePreset === p.id} onclick={() => applyPreset(p.id)}>{p.name}</button>
@@ -302,7 +411,7 @@
             <span class="mono">{Number(config.composite_threshold).toFixed(2)}</span>
           </label>
         </div>
-        <h3>Weights</h3>
+        <h3>Score weights</h3>
         <div class="weights">
           {#each ['geo', 'name', 'attr', 'temporal'] as w}
             <label>{w}
@@ -313,17 +422,34 @@
         </div>
       </div>
       <aside class="config-side">
-        <p>Demo lists loaded with intentional temporal variants and spatial proximity candidates. Facility Loose is a good first preset for screenshots.</p>
+        <p>
+          Facility Loose widens geo radius for spatial proximity candidates. Sensor Temporal raises date
+          tolerance for re-analysis updates. Prior keep-separate decisions from earlier runs stay in the
+          local decline ledger.
+        </p>
+        {#if declineLedger.length}
+          <div class="ledger-chip">{declineLedger.length} prior keep-separate on file</div>
+        {/if}
         <button class="cta pulse-cta" onclick={compare} disabled={loading}>
-          {loading ? 'Comparing…' : 'Run Fuzzy Comparison'}
+          {loading ? 'Running…' : 'Run comparison'}
         </button>
-        <button class="ghost-link" onclick={() => (step = 'ingest')}>← Back to ingest</button>
+        <button class="ghost-link" onclick={() => (step = 'ingest')}>← Back to Ingest</button>
       </aside>
     </section>
   {/if}
 
   {#if step === 'results' && result}
     <section class="results">
+      <div class="ops-banner rise">
+        <div>
+          <strong>Review queue</strong>
+          <span class="mono">{pendingCount} pending · {decidedCount} decided · {keepSeparateCount} keep separate</span>
+        </div>
+        <button class="primary" onclick={goMerge}>
+          Proceed to Merge board
+        </button>
+      </div>
+
       <div class="kpis rise">
         {#each kpiEntries(result.summary.counts) as k}
           <button class="kpi" style="--c: {k.color}" onclick={() => toggleClass(k.key.startsWith('unmatched') ? 'unmatched' : k.key)}>
@@ -337,10 +463,56 @@
         </div>
       </div>
 
+      <div class="inventory-panel rise">
+        <div class="inv-head">
+          <h3>Category inventory</h3>
+          <span class="muted">Compare source counts vs working merge — inflation may mean unresolved duplicates</span>
+        </div>
+        {#if inventory.alerts.length}
+          <div class="inv-alerts">
+            {#each inventory.alerts as a}
+              <span class="flag {a.flag}">{a.category}: {flagLabel(a.flag)} (working {a.working} / max source {a.ceiling})</span>
+            {/each}
+          </div>
+        {/if}
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Source A</th>
+              <th>Source B</th>
+              <th>Working merge</th>
+              <th>Projected if auto-merge</th>
+              <th>Signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each inventory.rows as r}
+              <tr class:warn={!!r.flag}>
+                <td>{r.category}</td>
+                <td class="mono">{r.list_a}</td>
+                <td class="mono">{r.list_b}</td>
+                <td class="mono">{r.working}</td>
+                <td class="mono">{r.projected}</td>
+                <td>{r.flag ? flagLabel(r.flag) : '—'}</td>
+              </tr>
+            {/each}
+            <tr class="totals">
+              <td>Total</td>
+              <td class="mono">{inventory.totals.list_a}</td>
+              <td class="mono">{inventory.totals.list_b}</td>
+              <td class="mono">{inventory.totals.working}</td>
+              <td class="mono">{inventory.totals.projected}</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div class="toolbar">
         <input type="search" placeholder="Search names…" bind:value={search} />
         <div class="chips">
-          {#each ['exact_match', 'strong_fuzzy_match', 'temporal_variant', 'spatial_proximity_candidate', 'weak_candidate'] as c}
+          {#each ['exact_match', 'strong_fuzzy_match', 'temporal_variant', 'spatial_proximity_candidate', 'weak_candidate', 'marked_distinct'] as c}
             <button class:on={filterClasses.includes(c)} onclick={() => toggleClass(c)}>
               <span class="dot" style="background:{CLASS_COLORS[c]}"></span>
               {CLASS_LABELS[c]}
@@ -349,8 +521,7 @@
         </div>
         <div class="toolbar-actions">
           <button onclick={compare} disabled={loading}>Re-run</button>
-          <button onclick={() => (step = 'master')}>Master ({master.length})</button>
-          <button onclick={exportResultsJson}>Export JSON</button>
+          <button onclick={exportPackage}>Export package</button>
         </div>
       </div>
 
@@ -366,11 +537,12 @@
                 <th>Date Δ</th>
                 <th>A</th>
                 <th>B</th>
+                <th>Hist</th>
               </tr>
             </thead>
             <tbody>
               {#each filteredMatches as m}
-                <tr class:selected={selectedId === m.pair_id} onclick={() => (selectedId = m.pair_id)}>
+                <tr class:selected={selectedId === m.pair_id} class:prior={!!m.priorDecline} onclick={() => (selectedId = m.pair_id)}>
                   <td><span class="badge badge-{m.classification}">{CLASS_LABELS[m.classification] || m.classification}</span></td>
                   <td class="mono">{(m.scores.composite_score * 100).toFixed(0)}</td>
                   <td class="mono">{m.scores.geo_distance_m?.toFixed?.(0) ?? '—'}</td>
@@ -378,6 +550,7 @@
                   <td class="mono">{m.scores.date_diff_days?.toFixed?.(0) ?? '—'}</td>
                   <td>{m.entity_a.name}</td>
                   <td>{m.entity_b.name}</td>
+                  <td class="mono">{m.priorDecline ? 'declined' : '—'}</td>
                 </tr>
               {/each}
             </tbody>
@@ -397,7 +570,8 @@
           <div class="detail-pane">
             <DetailPanel
               pair={selectedPair}
-              ondecide={decide}
+              priorDecline={selectedPrior}
+              oncommit={commitDisposition}
               onclose={() => (selectedId = null)}
             />
           </div>
@@ -406,37 +580,134 @@
     </section>
   {/if}
 
-  {#if step === 'master'}
-    <section class="master rise">
-      <div class="master-head">
-        <h2>Reconciled master</h2>
+  {#if step === 'merge'}
+    <section class="merge rise">
+      <div class="merge-head">
+        <div>
+          <h2>Merge board</h2>
+          <p class="muted">
+            Commit dispositions on candidates in Results, then publish the working set for downstream systems.
+          </p>
+        </div>
         <div class="toolbar-actions">
-          <button class="primary" onclick={exportMasterCsv} disabled={!master.length}>Download CSV</button>
-          <button onclick={exportResultsJson}>Full package JSON</button>
+          <button class="primary" onclick={publishWorkingSet} disabled={!workingSet.length && !keepSeparateCount}>
+            Publish working set
+          </button>
+          <button onclick={exportWorkingCsv} disabled={!workingSet.length}>Download merge CSV</button>
+          <button onclick={exportPackage}>Full package</button>
           <button onclick={() => (step = 'results')}>← Results</button>
         </div>
       </div>
-      {#if !master.length}
-        <p class="muted">Confirm matches from the detail panel to build the master list.</p>
+
+      {#if published}
+        <div class="publish-ok" role="status">{publishNote}</div>
+      {/if}
+
+      <div class="merge-grid">
+        <div class="merge-card">
+          <h3>Session metrics</h3>
+          <dl class="metrics">
+            <div><dt>Candidates</dt><dd class="mono">{result?.matches?.length ?? 0}</dd></div>
+            <div><dt>Pending review</dt><dd class="mono">{pendingCount}</dd></div>
+            <div><dt>Merged into working set</dt><dd class="mono">{workingSet.length}</dd></div>
+            <div><dt>Keep separate (this run)</dt><dd class="mono">{keepSeparateCount}</dd></div>
+            <div><dt>Prior declines on file</dt><dd class="mono">{declineLedger.length}</dd></div>
+          </dl>
+        </div>
+
+        <div class="merge-card">
+          <h3>Decline trend by category</h3>
+          {#if !declineTrend.length}
+            <p class="muted">No keep-separate history yet. Declines persist locally for future comparisons.</p>
+          {:else}
+            <table>
+              <thead><tr><th>Category</th><th>Keep-separate count</th></tr></thead>
+              <tbody>
+                {#each declineTrend as t}
+                  <tr><td>{t.category}</td><td class="mono">{t.count}</td></tr>
+                {/each}
+              </tbody>
+            </table>
+          {/if}
+        </div>
+      </div>
+
+      <div class="inventory-panel">
+        <div class="inv-head">
+          <h3>Category breakout</h3>
+          <span class="muted">If you expect 5 trucks but the working set shows 8, unresolved duplicates remain</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Source A</th>
+              <th>Source B</th>
+              <th>Working merge</th>
+              <th>Projected</th>
+              <th>Signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each inventory.rows as r}
+              <tr class:warn={!!r.flag}>
+                <td>{r.category}</td>
+                <td class="mono">{r.list_a}</td>
+                <td class="mono">{r.list_b}</td>
+                <td class="mono">{r.working}</td>
+                <td class="mono">{r.projected}</td>
+                <td>{r.flag ? flagLabel(r.flag) : '—'}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="subhead">Working merge set</h3>
+      {#if !workingSet.length}
+        <p class="muted">No merges committed yet. Open a candidate in Results, set disposition, and Commit.</p>
       {:else}
         <table>
           <thead>
             <tr>
               <th>Name</th>
-              <th>Class</th>
+              <th>Category</th>
+              <th>Disposition</th>
               <th>Score</th>
               <th>Notes</th>
-              <th>Decided</th>
+              <th>Committed</th>
             </tr>
           </thead>
           <tbody>
-            {#each master as row}
+            {#each workingSet as row}
               <tr>
                 <td>{row.name}</td>
+                <td>{row.category}</td>
                 <td><span class="badge badge-{row._match_classification}">{CLASS_LABELS[row._match_classification]}</span></td>
                 <td class="mono">{(row._composite_score * 100).toFixed(0)}%</td>
                 <td>{row._notes || '—'}</td>
                 <td class="mono">{row._decided_at}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      {/if}
+
+      <h3 class="subhead">Keep-separate (this run)</h3>
+      {#if !keepSeparateCount}
+        <p class="muted">No declines committed in this session.</p>
+      {:else}
+        <table>
+          <thead>
+            <tr><th>Pair</th><th>Action</th><th>Notes</th><th>At</th></tr>
+          </thead>
+          <tbody>
+            {#each Object.entries(decisions).filter(([, d]) => d.action === 'keep_separate') as [pid, d]}
+              <tr>
+                <td class="mono">{pid}</td>
+                <td><span class="badge badge-marked_distinct">Keep separate</span></td>
+                <td>{d.notes || '—'}</td>
+                <td class="mono">{d.at}</td>
               </tr>
             {/each}
           </tbody>
@@ -482,7 +753,6 @@
     font-size: 1.65rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--paper);
   }
   .brand p {
     margin: 0.15rem 0 0;
@@ -491,23 +761,48 @@
   }
   .steps {
     display: flex;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
-  .steps button {
+  .step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     background: transparent;
     border: 1px solid var(--line);
-    color: var(--paper-dim);
-    padding: 0.35rem 0.7rem;
-    border-radius: 999px;
+    color: var(--gray);
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
     font-size: 0.78rem;
+    font-weight: 600;
   }
-  .steps button.active {
-    border-color: var(--teal);
-    color: var(--teal);
-    background: rgba(46, 196, 182, 0.08);
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
   }
-  .steps button:disabled {
-    opacity: 0.35;
+  .step.pending {
+    opacity: 0.55;
+  }
+  .step.active {
+    border-color: #5b8def;
+    color: #9cbcf0;
+    background: rgba(91, 141, 239, 0.12);
+  }
+  .step.active .step-dot {
+    background: #5b8def;
+    box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.25);
+  }
+  .step.complete {
+    border-color: var(--green);
+    color: #7ddecf;
+    background: rgba(42, 157, 143, 0.16);
+  }
+  .step.complete .step-dot {
+    background: var(--green);
+  }
+  .step:disabled {
+    cursor: not-allowed;
   }
   .error {
     background: rgba(196, 69, 54, 0.15);
@@ -518,16 +813,28 @@
     margin-bottom: 1rem;
   }
   .ingest .hero-copy {
-    max-width: 40rem;
+    max-width: 42rem;
     margin-bottom: 1.5rem;
   }
   h2 {
     margin: 0 0 0.5rem;
     font-size: 1.35rem;
   }
-  .hero-copy p {
+  h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--teal);
+  }
+  .subhead {
+    margin: 1.25rem 0 0.5rem;
+  }
+  .hero-copy p,
+  .muted {
     color: var(--paper-dim);
     line-height: 1.45;
+    font-size: 0.9rem;
   }
   .cta {
     margin-top: 1rem;
@@ -537,7 +844,6 @@
     font-weight: 700;
     padding: 0.7rem 1.2rem;
     border-radius: 4px;
-    font-size: 0.95rem;
   }
   .cta:disabled {
     opacity: 0.6;
@@ -560,13 +866,7 @@
     min-height: 180px;
   }
   .drop h3 {
-    margin: 0 0 0.35rem;
-    font-size: 0.9rem;
-    color: var(--teal);
-  }
-  .muted {
-    color: var(--gray);
-    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
   }
   .mono {
     font-family: var(--font-mono);
@@ -605,6 +905,9 @@
     padding: 0.55rem 0.9rem;
     border-radius: 4px;
   }
+  .primary:disabled {
+    opacity: 0.45;
+  }
   .config {
     display: grid;
     grid-template-columns: 1.4fr 0.8fr;
@@ -616,7 +919,10 @@
     }
   }
   .config-main,
-  .config-side {
+  .config-side,
+  .merge-card,
+  .inventory-panel,
+  .merge {
     background: rgba(16, 40, 51, 0.8);
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -632,7 +938,7 @@
     background: transparent;
     border: 1px solid var(--line);
     color: var(--paper-dim);
-    border-radius: 999px;
+    border-radius: 4px;
     padding: 0.3rem 0.7rem;
     font-size: 0.78rem;
   }
@@ -663,6 +969,16 @@
     line-height: 1.45;
     font-size: 0.9rem;
   }
+  .ledger-chip {
+    display: inline-block;
+    margin: 0.6rem 0;
+    padding: 0.25rem 0.55rem;
+    border: 1px solid rgba(196, 69, 54, 0.4);
+    color: #f0b4ad;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+  }
   .ghost-link {
     display: inline-block;
     margin-top: 0.8rem;
@@ -670,6 +986,23 @@
     border: none;
     color: var(--gray);
     padding: 0;
+  }
+  .ops-banner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.85rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--teal);
+    border-radius: 4px;
+    background: rgba(16, 40, 51, 0.85);
+  }
+  .ops-banner strong {
+    display: block;
+    margin-bottom: 0.15rem;
   }
   .kpis {
     display: grid;
@@ -697,6 +1030,46 @@
     color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+  }
+  .inventory-panel {
+    margin-bottom: 0.85rem;
+  }
+  .inv-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+  .inv-alerts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.55rem;
+  }
+  .flag {
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    padding: 0.2rem 0.45rem;
+    border-radius: 3px;
+  }
+  .flag.inflation {
+    background: rgba(196, 69, 54, 0.15);
+    color: #f0b4ad;
+    border: 1px solid rgba(196, 69, 54, 0.35);
+  }
+  .flag.deflation,
+  .flag.watch {
+    background: rgba(244, 162, 97, 0.12);
+    color: #f6c08a;
+    border: 1px solid rgba(244, 162, 97, 0.35);
+  }
+  tr.warn td {
+    color: #f6c08a;
+  }
+  tr.totals td {
+    font-weight: 600;
+    border-top: 1px solid var(--line);
   }
   .toolbar {
     display: flex;
@@ -726,7 +1099,7 @@
     background: transparent;
     border: 1px solid var(--line);
     color: var(--paper-dim);
-    border-radius: 999px;
+    border-radius: 4px;
     padding: 0.2rem 0.55rem;
     font-size: 0.72rem;
   }
@@ -741,9 +1114,10 @@
   }
   .toolbar-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.35rem;
   }
-  .toolbar-actions button {
+  .toolbar-actions button:not(.primary) {
     background: rgba(16, 40, 51, 0.9);
     border: 1px solid var(--line);
     color: var(--paper);
@@ -783,20 +1157,58 @@
   .table-wrap tr:hover {
     background: rgba(46, 196, 182, 0.08);
   }
+  .table-wrap tr.prior td:last-child {
+    color: #f0b4ad;
+  }
   .map-pane {
     min-height: 100%;
   }
-  .master-head {
+  .merge-head {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
   }
-  .master {
-    background: rgba(16, 40, 51, 0.75);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 1rem;
+  .merge-head p {
+    margin: 0.25rem 0 0;
+  }
+  .publish-ok {
+    background: rgba(42, 157, 143, 0.15);
+    border: 1px solid rgba(42, 157, 143, 0.4);
+    color: #7ddecf;
+    padding: 0.55rem 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 0.85rem;
+    font-size: 0.85rem;
+  }
+  .merge-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+  @media (max-width: 800px) {
+    .merge-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 1rem;
+    margin: 0.75rem 0 0;
+  }
+  .metrics > div {
+    display: contents;
+  }
+  .metrics dt {
+    color: var(--gray);
+    font-size: 0.8rem;
+  }
+  .metrics dd {
+    margin: 0;
+    text-align: right;
+    font-size: 0.9rem;
   }
 </style>
