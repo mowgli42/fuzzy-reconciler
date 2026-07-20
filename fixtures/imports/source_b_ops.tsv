@@ -1,0 +1,7 @@
+site_id	label	lat_dd	lng	as_of	asset_type	operator	height_m	power_kw	band
+EX-1B	Harbor Relay North	28.41002	-80.620015	2026-03-01T12:00:00Z	tower	Harbor Net	40		
+TV-1B	Cell Site Alpha-7	28.1235	-80.5679	2026-03-18T14:30:00Z	tower	Verizon	48		
+SP-1B	Site NT-07	28.5568	-80.9987	2026-03-03T08:00:00Z	facility	Verizon	47	25	n78
+UB-1	Unique Bravo 1	28.51	-80.51	2026-03-06T00:00:00Z	facility	AT&T	21		
+UB-2	Unique Bravo 2	28.52	-80.52	2026-03-06T00:00:00Z	tower	AT&T	22		
+UB-3	Unique Bravo 3	28.53	-80.53	2026-03-06T00:00:00Z	facility	AT&T	23		

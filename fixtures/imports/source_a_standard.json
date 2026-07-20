@@ -1,0 +1,64 @@
+[
+  {
+    "id": "EX-1",
+    "name": "Harbor Relay North",
+    "lat": 28.41,
+    "lon": -80.62,
+    "analyzed_at": "2026-03-01T10:00:00Z",
+    "category": "tower",
+    "operator": "Harbor Net",
+    "height_m": 40
+  },
+  {
+    "id": "TV-1",
+    "name": "Cell Site Alpha-7",
+    "lat": 28.1234,
+    "lon": -80.5678,
+    "analyzed_at": "2026-03-01T10:00:00Z",
+    "category": "tower",
+    "operator": "Verizon",
+    "height_m": 48
+  },
+  {
+    "id": "SP-1",
+    "name": "North Tower Array",
+    "lat": 28.5555,
+    "lon": -80.9999,
+    "analyzed_at": "2026-03-02T08:00:00Z",
+    "category": "facility",
+    "operator": "Verizon",
+    "height_m": 45,
+    "power_kw": 25,
+    "band": "n78"
+  },
+  {
+    "id": "UA-1",
+    "name": "Unique Alpha 1",
+    "lat": 28.310000000000002,
+    "lon": -80.71000000000001,
+    "analyzed_at": "2026-03-05T00:00:00Z",
+    "category": "sensor",
+    "operator": "Space Coast Ops",
+    "height_m": 11
+  },
+  {
+    "id": "UA-2",
+    "name": "Unique Alpha 2",
+    "lat": 28.32,
+    "lon": -80.72,
+    "analyzed_at": "2026-03-05T00:00:00Z",
+    "category": "poi",
+    "operator": "Space Coast Ops",
+    "height_m": 12
+  },
+  {
+    "id": "UA-3",
+    "name": "Unique Alpha 3",
+    "lat": 28.330000000000002,
+    "lon": -80.73,
+    "analyzed_at": "2026-03-05T00:00:00Z",
+    "category": "sensor",
+    "operator": "Space Coast Ops",
+    "height_m": 13
+  }
+]

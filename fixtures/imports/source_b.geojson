@@ -1,0 +1,121 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "EX-1B",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.620015,
+          28.41002
+        ]
+      },
+      "properties": {
+        "id": "EX-1B",
+        "name": "Harbor Relay North",
+        "analyzed_at": "2026-03-01T12:00:00Z",
+        "category": "tower",
+        "operator": "Harbor Net",
+        "height_m": 40
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "TV-1B",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.5679,
+          28.1235
+        ]
+      },
+      "properties": {
+        "id": "TV-1B",
+        "name": "Cell Site Alpha-7",
+        "analyzed_at": "2026-03-18T14:30:00Z",
+        "category": "tower",
+        "operator": "Verizon",
+        "height_m": 48
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "SP-1B",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.9987,
+          28.5568
+        ]
+      },
+      "properties": {
+        "id": "SP-1B",
+        "name": "Site NT-07",
+        "analyzed_at": "2026-03-03T08:00:00Z",
+        "category": "facility",
+        "operator": "Verizon",
+        "height_m": 47,
+        "power_kw": 25,
+        "band": "n78"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UB-1",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.51,
+          28.51
+        ]
+      },
+      "properties": {
+        "id": "UB-1",
+        "name": "Unique Bravo 1",
+        "analyzed_at": "2026-03-06T00:00:00Z",
+        "category": "facility",
+        "operator": "AT&T",
+        "height_m": 21
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UB-2",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.52,
+          28.52
+        ]
+      },
+      "properties": {
+        "id": "UB-2",
+        "name": "Unique Bravo 2",
+        "analyzed_at": "2026-03-06T00:00:00Z",
+        "category": "tower",
+        "operator": "AT&T",
+        "height_m": 22
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "UB-3",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.53,
+          28.53
+        ]
+      },
+      "properties": {
+        "id": "UB-3",
+        "name": "Unique Bravo 3",
+        "analyzed_at": "2026-03-06T00:00:00Z",
+        "category": "facility",
+        "operator": "AT&T",
+        "height_m": 23
+      }
+    }
+  ]
+}

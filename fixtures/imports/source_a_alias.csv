@@ -1,0 +1,8 @@
+entity_id,POI_Name,latitude,longitude,last_analyzed,facility_type,operator,height_m
+EX-1,Harbor Relay North,28.41,-80.62,2026-03-01T10:00:00Z,tower,Harbor Net,40
+TV-1,Cell Site Alpha-7,28.1234,-80.5678,2026-03-01T10:00:00Z,tower,Verizon,48
+SP-1,North Tower Array,28.5555,-80.9999,2026-03-02T08:00:00Z,facility,Verizon,45
+UA-1,Unique Alpha 1,28.310000000000002,-80.71000000000001,2026-03-05T00:00:00Z,sensor,Space Coast Ops,11
+UA-2,Unique Alpha 2,28.32,-80.72,2026-03-05T00:00:00Z,poi,Space Coast Ops,12
+UA-3,Unique Alpha 3,28.330000000000002,-80.73,2026-03-05T00:00:00Z,sensor,Space Coast Ops,13
+NOISE-A,Broken Coord Site,,not-a-number,2026-03-01T00:00:00Z,poi,Unknown,1

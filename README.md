@@ -22,7 +22,7 @@ make backend
 cd frontend && npm install && npm run dev
 ```
 
-Open **http://127.0.0.1:5173** → **Load Demo Data** → **Facility Loose** → **Run Fuzzy Comparison**.
+Open **http://127.0.0.1:5173** → **Load sample inventories** → **Facility Loose** → **Run comparison** → review candidates → **Proceed to Merge board** → **Publish working set**.
 
 Or one-shot API check:
 
@@ -31,21 +31,7 @@ curl -s http://127.0.0.1:8010/health
 curl -s -X POST http://127.0.0.1:8010/compare/demo -H 'content-type: application/json' -d '{"max_geo_distance_m":350,"date_tolerance_days":30}'
 ```
 
-### Demo screenshots
-
-![Ingestion](docs/screenshots/01-ingestion.png)
-
-![Configuration](docs/screenshots/02-configuration.png)
-
-![Results dashboard](docs/screenshots/03-results-dashboard.png)
-
-![Temporal detail](docs/screenshots/04-detail-temporal.png)
-
-![Spatial detail](docs/screenshots/05-detail-spatial.png)
-
-![Reconciled master](docs/screenshots/06-reconciled-master.png)
-
-Re-capture with `node scripts/capture-screenshots.mjs` (API + Vite must be running).
+Operator flow: commit dispositions (merge / temporal update / keep separate) on candidates, watch category inventory for over-count risk, then publish the working merge set.
 
 ---
 
@@ -270,6 +256,6 @@ PRs welcome. Questions or spec tweaks? Open an issue or edit the OpenSpec direct
 
 ---
 
-**Status**: MVP prototype runnable. Beads in `BEADS.md` / `bd list`. Screenshots in `docs/screenshots/`.
+**Status**: MVP prototype runnable. Beads in `BEADS.md` / `bd list`.
 
 MIT License. Built in the pragmatic, local-first style of related projects.
