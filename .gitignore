@@ -32,8 +32,10 @@ venv.bak/
 # Node / Frontend
 node_modules/
 frontend/dist/
+public/
 .vite/
 *.local
+.vercel/
 
 # IDE
 .idea/

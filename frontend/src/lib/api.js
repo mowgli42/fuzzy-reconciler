@@ -1,4 +1,6 @@
-const BASE = ''
+/** API client — always calls /api/* (Vite proxies locally; Vercel same-origin). */
+
+const BASE = (import.meta.env.VITE_API_BASE || '/api').replace(/\/$/, '')
 
 async function json(res) {
   if (!res.ok) {

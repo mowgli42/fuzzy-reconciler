@@ -41,7 +41,7 @@ def _ingest_files(path_a: Path | None = None, path_b: Path | None = None):
         files["list_a_file"] = (path_a.name, path_a.read_bytes(), "application/octet-stream")
     if path_b is not None:
         files["list_b_file"] = (path_b.name, path_b.read_bytes(), "application/octet-stream")
-    return client.post("/ingest", files=files)
+    return client.post("/api/ingest", files=files)
 
 
 def _find_pair(matches: list[dict], name_a: str | None = None, name_b: str | None = None, id_a: str | None = None):
@@ -150,7 +150,7 @@ class TestIngestFormats:
 
 class TestCompareViaApi:
     def test_compare_demo_has_temporal_and_spatial(self, compare_config):
-        r = client.post("/compare/demo", json=compare_config)
+        r = client.post("/api/compare/demo", json=compare_config)
         assert r.status_code == 200
         counts = r.json()["summary"]["counts"]
         assert counts.get("temporal_variant", 0) >= 1
@@ -165,7 +165,7 @@ class TestCompareViaApi:
             "list_b": body["list_b"]["entities"],
             "config": compare_config,
         }
-        r = client.post("/compare", json=payload)
+        r = client.post("/api/compare", json=payload)
         assert r.status_code == 200
         data = r.json()
         assert data["summary"]["pair_count"] >= 3
@@ -195,7 +195,7 @@ class TestCompareViaApi:
         list_a = [e for e in body["list_a"]["entities"] if e.get("lat") is not None]
         list_b = body["list_b"]["entities"]
         r = client.post(
-            "/compare",
+            "/api/compare",
             json={"list_a": list_a, "list_b": list_b, "config": compare_config},
         )
         assert r.status_code == 200
@@ -209,7 +209,7 @@ class TestCompareViaApi:
         assert ingested.status_code == 200
         body = ingested.json()
         r = client.post(
-            "/compare",
+            "/api/compare",
             json={
                 "list_a": body["list_a"]["entities"],
                 "list_b": body["list_b"]["entities"],
@@ -227,7 +227,7 @@ class TestCompareViaApi:
         assert ingested.status_code == 200
         body = ingested.json()
         r = client.post(
-            "/compare",
+            "/api/compare",
             json={
                 "list_a": body["list_a"]["entities"],
                 "list_b": body["list_b"]["entities"],
@@ -238,11 +238,11 @@ class TestCompareViaApi:
         assert r.json()["summary"]["pair_count"] >= 3
 
     def test_compare_requires_both_lists(self):
-        r = client.post("/compare", json={"list_a": [], "list_b": []})
+        r = client.post("/api/compare", json={"list_a": [], "list_b": []})
         assert r.status_code == 400
 
     def test_ingest_preview_endpoint(self):
-        r = client.get("/demo/ingest-preview")
+        r = client.get("/api/demo/ingest-preview")
         assert r.status_code == 200
         data = r.json()
         assert data["list_a"]["row_count"] > 20
@@ -255,7 +255,7 @@ class TestScoreBreakdownContract:
         ingested = _ingest_files(IMPORTS / "source_a_standard.json", IMPORTS / "source_b_standard.json")
         body = ingested.json()
         r = client.post(
-            "/compare",
+            "/api/compare",
             json={
                 "list_a": body["list_a"]["entities"],
                 "list_b": body["list_b"]["entities"],

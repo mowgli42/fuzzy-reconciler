@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -23,9 +24,25 @@ from fuzzy_reconciler.models import (
 )
 from fuzzy_reconciler.presets import get_preset, get_presets
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _find_repo_root() -> Path:
+    here = Path(__file__).resolve()
+    candidates = [
+        here.parents[3],  # src/fuzzy_reconciler/api/app.py → repo
+        here.parents[2],
+        Path.cwd(),
+        Path(os.environ.get("VERCEL_PROJECT_ROOT", "")) if os.environ.get("VERCEL_PROJECT_ROOT") else None,
+    ]
+    for c in candidates:
+        if c and (c / "fixtures" / "small_demo.json").exists():
+            return c
+    return here.parents[3]
+
+
+ROOT = _find_repo_root()
 FIXTURES = ROOT / "fixtures"
 FRONTEND_DIST = ROOT / "frontend" / "dist"
+ON_VERCEL = bool(os.environ.get("VERCEL"))
 
 app = FastAPI(
     title="Fuzzy Entity Reconciler",
@@ -41,20 +58,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# All HTTP routes live under /api for Vercel same-origin + local Vite proxy.
+api = APIRouter(prefix="/api")
+
 
 def _load_demo() -> dict:
     path = FIXTURES / "small_demo.json"
     if not path.exists():
-        raise HTTPException(status_code=404, detail="Demo fixtures missing; run scripts/generate_sample_data.py")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Demo fixtures missing at {path}; run scripts/generate_sample_data.py",
+        )
     return json.loads(path.read_text())
 
 
-@app.get("/health")
+@api.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": "fuzzy-reconciler"}
+    return {
+        "status": "ok",
+        "service": "fuzzy-reconciler",
+        "persistence": "browser",  # server is stateless; history is client-local for demo
+        "vercel": ON_VERCEL,
+    }
 
 
-@app.get("/demo/sample", response_model=DemoSampleResponse)
+@api.get("/demo/sample", response_model=DemoSampleResponse)
 def demo_sample() -> DemoSampleResponse:
     data = _load_demo()
     list_a = [Entity(**e) for e in data["list_a"]]
@@ -62,7 +90,7 @@ def demo_sample() -> DemoSampleResponse:
     return DemoSampleResponse(list_a=list_a, list_b=list_b, meta=data.get("meta", {}))
 
 
-@app.get("/demo/ingest-preview", response_model=IngestResponse)
+@api.get("/demo/ingest-preview", response_model=IngestResponse)
 def demo_ingest_preview() -> IngestResponse:
     """Sample inventories as full ingest previews (metrics + first rows) for verification."""
     data = _load_demo()
@@ -74,12 +102,12 @@ def demo_ingest_preview() -> IngestResponse:
     )
 
 
-@app.get("/presets")
+@api.get("/presets")
 def presets() -> list[dict]:
     return [p.model_dump() for p in get_presets()]
 
 
-@app.get("/presets/{preset_id}")
+@api.get("/presets/{preset_id}")
 def preset_detail(preset_id: str) -> dict:
     p = get_preset(preset_id)
     if not p:
@@ -87,7 +115,7 @@ def preset_detail(preset_id: str) -> dict:
     return p.model_dump()
 
 
-@app.post("/ingest", response_model=IngestResponse)
+@api.post("/ingest", response_model=IngestResponse)
 async def ingest(
     list_a_file: UploadFile | None = File(None),
     list_b_file: UploadFile | None = File(None),
@@ -120,14 +148,14 @@ async def ingest(
     return IngestResponse(list_a=a, list_b=b)
 
 
-@app.post("/compare", response_model=CompareResult)
+@api.post("/compare", response_model=CompareResult)
 def compare(req: CompareRequest) -> CompareResult:
     if not req.list_a or not req.list_b:
         raise HTTPException(status_code=400, detail="Both list_a and list_b are required")
     return compare_lists(req.list_a, req.list_b, req.config)
 
 
-@app.post("/compare/demo", response_model=CompareResult)
+@api.post("/compare/demo", response_model=CompareResult)
 def compare_demo(config: MatchConfig | None = None) -> CompareResult:
     data = _load_demo()
     list_a = [Entity(**e) for e in data["list_a"]]
@@ -135,8 +163,10 @@ def compare_demo(config: MatchConfig | None = None) -> CompareResult:
     return compare_lists(list_a, list_b, config or MatchConfig())
 
 
-# Serve built frontend if present
-if FRONTEND_DIST.exists():
+app.include_router(api)
+
+# Local/docker convenience: serve Vite build when present (skipped on Vercel — uses public/)
+if not ON_VERCEL and FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
     @app.get("/")
@@ -145,6 +175,8 @@ if FRONTEND_DIST.exists():
 
     @app.get("/{full_path:path}")
     def spa_fallback(full_path: str) -> FileResponse:
+        if full_path.startswith("api"):
+            raise HTTPException(status_code=404, detail="Not found")
         candidate = FRONTEND_DIST / full_path
         if candidate.is_file():
             return FileResponse(candidate)

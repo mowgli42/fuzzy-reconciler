@@ -23,6 +23,7 @@ Local-first. No cloud or LLM required for core matching.
 | Category inventory / over-count signals | Shipped |
 | Merge board + publish working set + CSV/JSON export | Shipped |
 | API robustness suite + import fixtures | Shipped (`make test`, 29+ tests) |
+| Vercel deploy (stateless API + browser-local history) | Shipped — see `docs/VERCEL.md` |
 
 Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md`
 
@@ -36,7 +37,7 @@ source .venv/bin/activate
 pip install -e ".[test]"
 python scripts/generate_sample_data.py
 
-# Terminal 1 — API on :8010
+# Terminal 1 — API on :8010 (/api/*)
 make backend
 
 # Terminal 2 — UI on :5173
@@ -54,10 +55,18 @@ Open **http://127.0.0.1:5173**
 API smoke:
 
 ```bash
-curl -s http://127.0.0.1:8010/health
-curl -s http://127.0.0.1:8010/demo/ingest-preview | head -c 200
-make test   # regenerates import samples + runs pytest
+curl -s http://127.0.0.1:8010/api/health
+curl -s http://127.0.0.1:8010/api/demo/ingest-preview | head -c 200
+make test
 ```
+
+### Vercel demo
+
+```bash
+vercel --prod
+```
+
+Same-origin UI + `/api/*` serverless FastAPI. **History (declines / session) stays in each visitor’s browser** — no shared database for the multi-user demo. Details: [`docs/VERCEL.md`](docs/VERCEL.md).
 
 ---
 
@@ -94,7 +103,7 @@ flowchart TD
     end
 
     subgraph Backend["Backend — FastAPI + Pydantic"]
-        API["/ingest /compare /demo /presets"]
+        API["/api/ingest /api/compare /api/demo /api/presets"]
         Engine[Matching engine<br/>geo grid block · rapidfuzz · attr · temporal<br/>exact / strong / temporal / spatial / weak]
     end
 
@@ -106,7 +115,9 @@ flowchart TD
 | Layer | Implementation |
 |-------|----------------|
 | Frontend | Svelte 5, Vite, Tailwind, Leaflet |
-| Backend | FastAPI, Pydantic v2, rapidfuzz, haversine (pure Python) |
+| Backend | FastAPI, Pydantic v2, rapidfuzz, haversine (pure Python) — routes under `/api` |
+| Hosting | Local Docker/uvicorn, or **Vercel** (static UI + serverless API) |
+| Persistence | Browser `localStorage` by default (demo); shared DB optional / not required |
 | Fixtures | `fixtures/small_demo.json`, `fixtures/imports/*` |
 | Tests | `pytest` API + engine + ingest (`make test`) |
 | Container | `Dockerfile`, `docker-compose.yml` (API :8010) |
@@ -123,11 +134,11 @@ sequenceDiagram
     participant E as Engine
 
     U->>F: Load sample or upload Source A/B
-    F->>B: GET /demo/ingest-preview or POST /ingest
+    F->>B: GET /api/demo/ingest-preview or POST /api/ingest
     B-->>F: Previews + metrics (totals, geo-valid, mapping)
     U->>F: Verify rows then Configure
     U->>F: Run comparison
-    F->>B: POST /compare
+    F->>B: POST /api/compare
     B->>E: Block → score → classify
     E-->>B: Matches + unmatched + summary
     B-->>F: Results
