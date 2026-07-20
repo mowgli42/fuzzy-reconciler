@@ -52,12 +52,13 @@ Requires a Vercel account login (`vercel login`) or `VERCEL_TOKEN`.
 | Step | Source |
 |------|--------|
 | Node install + `vite build` | `vercel.json` `buildCommand` / `installCommand` |
-| Static assets | Built into `public/` via `outputDirectory` (CDN) |
+| Static assets | Built into `public/`, then bundled into the Python function (`includeFiles`) |
 | Python deps | `pip install .` from `pyproject.toml` (runtime **3.12** via `.python-version`) |
-| ASGI entry | `api.index:app` (`[tool.vercel] entrypoint`) |
-| `/api/*` routing | Rewrite `/api/(.*)` → `/api/index` so nested paths hit FastAPI (not only `/api`) |
+| ASGI entry | `api.index:app` — serves **both** `/api/*` and the SPA |
+| Routing | Rewrite `/(.*)` → `/api/index` (nested `/api/*` must hit the same function) |
 | Demo fixtures | Bundled via `functions.api/index.py.includeFiles` |
-| SPA fallback | Rewrite non-`/api/*` → `/index.html` (static file from `public/`) |
+
+> Note: `outputDirectory` alone breaks nested `/api` routes on this project; serving the UI from FastAPI keeps API + SPA on one working function.
 
 ## Optional env
 

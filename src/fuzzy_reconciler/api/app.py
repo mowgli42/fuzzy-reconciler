@@ -42,7 +42,19 @@ def _find_repo_root() -> Path:
 ROOT = _find_repo_root()
 FIXTURES = ROOT / "fixtures"
 FRONTEND_DIST = ROOT / "frontend" / "dist"
+PUBLIC_DIR = ROOT / "public"
 ON_VERCEL = bool(os.environ.get("VERCEL"))
+
+
+def _static_root() -> Path | None:
+    """Prefer built public/ on Vercel; locally use Vite dist when present."""
+    if ON_VERCEL and (PUBLIC_DIR / "index.html").is_file():
+        return PUBLIC_DIR
+    if not ON_VERCEL and (FRONTEND_DIST / "index.html").is_file():
+        return FRONTEND_DIST
+    if (PUBLIC_DIR / "index.html").is_file():
+        return PUBLIC_DIR
+    return None
 
 app = FastAPI(
     title="Fuzzy Entity Reconciler",
@@ -165,19 +177,25 @@ def compare_demo(config: MatchConfig | None = None) -> CompareResult:
 
 app.include_router(api)
 
-# Local/docker convenience: serve Vite build when present (skipped on Vercel — uses public/)
-if not ON_VERCEL and FRONTEND_DIST.exists():
-    app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+# Serve the Svelte UI. On Vercel, static CDN outputDirectory conflicts with nested
+# /api/* routing, so the ASGI app serves public/ (bundled via includeFiles).
+_static = _static_root()
+if _static is not None:
+    _assets = _static / "assets"
+    if _assets.is_dir():
+        app.mount("/assets", StaticFiles(directory=_assets), name="assets")
+
+    _index = _static / "index.html"
 
     @app.get("/")
-    def index() -> FileResponse:
-        return FileResponse(FRONTEND_DIST / "index.html")
+    def spa_index() -> FileResponse:
+        return FileResponse(_index)
 
     @app.get("/{full_path:path}")
     def spa_fallback(full_path: str) -> FileResponse:
-        if full_path.startswith("api"):
+        if full_path.startswith("api/") or full_path == "api":
             raise HTTPException(status_code=404, detail="Not found")
-        candidate = FRONTEND_DIST / full_path
+        candidate = _static / full_path
         if candidate.is_file():
             return FileResponse(candidate)
-        return FileResponse(FRONTEND_DIST / "index.html")
+        return FileResponse(_index)
