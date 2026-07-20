@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import csv
 import json
 from pathlib import Path
 
@@ -94,19 +95,23 @@ async def ingest(
     list_b_json: str | None = Form(None),
 ) -> IngestResponse:
     async def load_side(upload: UploadFile | None, raw_json: str | None, label: str):
-        if upload is not None:
-            content = (await upload.read()).decode("utf-8", errors="replace")
-            rows, fmt = sniff_and_parse(content, upload.filename or "")
-            return ingest_rows(
-                rows,
-                label,
-                source_format=fmt,
-                source_filename=upload.filename,
-            )
-        if raw_json:
-            rows, fmt = sniff_and_parse(raw_json, "paste.json")
-            return ingest_rows(rows, label, source_format=fmt, source_filename="paste")
-        return ingest_rows([], label)
+        try:
+            if upload is not None:
+                raw = await upload.read()
+                content = raw.decode("utf-8-sig", errors="replace")
+                rows, fmt = sniff_and_parse(content, upload.filename or "")
+                return ingest_rows(
+                    rows,
+                    label,
+                    source_format=fmt,
+                    source_filename=upload.filename,
+                )
+            if raw_json:
+                rows, fmt = sniff_and_parse(raw_json, "paste.json")
+                return ingest_rows(rows, label, source_format=fmt, source_filename="paste")
+            return ingest_rows([], label)
+        except (json.JSONDecodeError, ValueError, csv.Error) as exc:
+            raise HTTPException(status_code=400, detail=f"Failed to parse list {label}: {exc}") from exc
 
     a = await load_side(list_a_file, list_a_json, "A")
     b = await load_side(list_b_file, list_b_json, "B")

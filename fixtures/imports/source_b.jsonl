@@ -1,0 +1,6 @@
+{"id": "EX-1B", "name": "Harbor Relay North", "lat": 28.41002, "lon": -80.620015, "analyzed_at": "2026-03-01T12:00:00Z", "category": "tower", "operator": "Harbor Net", "height_m": 40}
+{"id": "TV-1B", "name": "Cell Site Alpha-7", "lat": 28.1235, "lon": -80.5679, "analyzed_at": "2026-03-18T14:30:00Z", "category": "tower", "operator": "Verizon", "height_m": 48}
+{"id": "SP-1B", "name": "Site NT-07", "lat": 28.5568, "lon": -80.9987, "analyzed_at": "2026-03-03T08:00:00Z", "category": "facility", "operator": "Verizon", "height_m": 47, "power_kw": 25, "band": "n78"}
+{"id": "UB-1", "name": "Unique Bravo 1", "lat": 28.51, "lon": -80.51, "analyzed_at": "2026-03-06T00:00:00Z", "category": "facility", "operator": "AT&T", "height_m": 21}
+{"id": "UB-2", "name": "Unique Bravo 2", "lat": 28.52, "lon": -80.52, "analyzed_at": "2026-03-06T00:00:00Z", "category": "tower", "operator": "AT&T", "height_m": 22}
+{"id": "UB-3", "name": "Unique Bravo 3", "lat": 28.53, "lon": -80.53, "analyzed_at": "2026-03-06T00:00:00Z", "category": "facility", "operator": "AT&T", "height_m": 23}

@@ -1,0 +1,50 @@
+{
+  "description": "Heterogeneous import samples for API ingest/compare robustness",
+  "pairs": {
+    "exact": {
+      "a": "EX-1",
+      "b": "EX-1B",
+      "expected_classes": [
+        "exact_match",
+        "strong_fuzzy_match"
+      ]
+    },
+    "temporal": {
+      "a": "TV-1",
+      "b": "TV-1B",
+      "expected_class": "temporal_variant"
+    },
+    "spatial": {
+      "a": "SP-1",
+      "b": "SP-1B",
+      "expected_class": "spatial_proximity_candidate"
+    }
+  },
+  "compare_config": {
+    "max_geo_distance_m": 350,
+    "min_name_similarity": 75,
+    "min_attr_similarity": 0.55,
+    "date_tolerance_days": 30,
+    "composite_threshold": 0.72,
+    "min_candidate_score": 0.4,
+    "weights": {
+      "geo": 0.3,
+      "name": 0.2,
+      "attr": 0.35,
+      "temporal": 0.15
+    }
+  },
+  "files": {
+    "source_a_alias.csv": "CSV with POI_Name/latitude/longitude aliases + one bad-geo row",
+    "source_b_ops.tsv": "TSV with label/lat_dd/lng/as_of/asset_type",
+    "source_a_standard.json": "JSON array standard schema",
+    "source_b_standard.json": "JSON array standard schema",
+    "source_a.jsonl": "JSONL standard schema",
+    "source_b.jsonl": "JSONL standard schema",
+    "source_b.geojson": "GeoJSON FeatureCollection points",
+    "source_a_bom.csv": "CSV with UTF-8 BOM",
+    "empty.csv": "empty file",
+    "header_only.csv": "header only",
+    "bad.json": "malformed JSON"
+  }
+}
