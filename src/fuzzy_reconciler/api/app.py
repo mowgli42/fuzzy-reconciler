@@ -43,17 +43,16 @@ ROOT = _find_repo_root()
 FIXTURES = ROOT / "fixtures"
 FRONTEND_DIST = ROOT / "frontend" / "dist"
 PUBLIC_DIR = ROOT / "public"
+# Built UI copied next to the package so Vercel includeFiles/src install always has it
+PACKAGE_WEB = Path(__file__).resolve().parents[1] / "web"
 ON_VERCEL = bool(os.environ.get("VERCEL"))
 
 
 def _static_root() -> Path | None:
-    """Prefer built public/ on Vercel; locally use Vite dist when present."""
-    if ON_VERCEL and (PUBLIC_DIR / "index.html").is_file():
-        return PUBLIC_DIR
-    if not ON_VERCEL and (FRONTEND_DIST / "index.html").is_file():
-        return FRONTEND_DIST
-    if (PUBLIC_DIR / "index.html").is_file():
-        return PUBLIC_DIR
+    """Resolve built UI directory (package web/ is most reliable on Vercel)."""
+    for candidate in (PACKAGE_WEB, PUBLIC_DIR, FRONTEND_DIST, Path.cwd() / "public"):
+        if candidate.is_dir() and (candidate / "index.html").is_file():
+            return candidate
     return None
 
 app = FastAPI(
@@ -86,11 +85,14 @@ def _load_demo() -> dict:
 
 @api.get("/health")
 def health() -> dict:
+    static = _static_root()
     return {
         "status": "ok",
         "service": "fuzzy-reconciler",
         "persistence": "browser",  # server is stateless; history is client-local for demo
         "vercel": ON_VERCEL,
+        "ui": static is not None,
+        "ui_root": str(static) if static else None,
     }
 
 

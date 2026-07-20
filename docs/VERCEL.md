@@ -52,13 +52,13 @@ Requires a Vercel account login (`vercel login`) or `VERCEL_TOKEN`.
 | Step | Source |
 |------|--------|
 | Node install + `vite build` | `vercel.json` `buildCommand` / `installCommand` |
-| Static assets | Built into `public/`, then bundled into the Python function (`includeFiles`) |
+| Static assets | Vite build copied to `src/fuzzy_reconciler/web/` (and `public/`) during `buildCommand` |
 | Python deps | `pip install .` from `pyproject.toml` (runtime **3.12** via `.python-version`) |
-| ASGI entry | `api.index:app` — serves **both** `/api/*` and the SPA |
+| ASGI entry | `api.index:app` — serves **both** `/api/*` and the SPA from package `web/` |
 | Routing | Rewrite `/(.*)` → `/api/index` (nested `/api/*` must hit the same function) |
 | Demo fixtures | Bundled via `functions.api/index.py.includeFiles` |
 
-> Note: `outputDirectory` alone breaks nested `/api` routes on this project; serving the UI from FastAPI keeps API + SPA on one working function.
+> Note: Vercel `outputDirectory` alone broke nested `/api` routes here. The UI is served from the ASGI app using files copied into `src/fuzzy_reconciler/web/` so they always ship with the function.
 
 ## Optional env
 
