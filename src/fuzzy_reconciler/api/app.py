@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from fuzzy_reconciler.ingest import ingest_rows, parse_csv_text, parse_json_payload
+from fuzzy_reconciler.ingest import entities_to_preview, ingest_rows, sniff_and_parse
 from fuzzy_reconciler.matching.engine import compare_lists
 from fuzzy_reconciler.models import (
     CompareRequest,
@@ -61,6 +61,18 @@ def demo_sample() -> DemoSampleResponse:
     return DemoSampleResponse(list_a=list_a, list_b=list_b, meta=data.get("meta", {}))
 
 
+@app.get("/demo/ingest-preview", response_model=IngestResponse)
+def demo_ingest_preview() -> IngestResponse:
+    """Sample inventories as full ingest previews (metrics + first rows) for verification."""
+    data = _load_demo()
+    list_a = [Entity(**e) for e in data["list_a"]]
+    list_b = [Entity(**e) for e in data["list_b"]]
+    return IngestResponse(
+        list_a=entities_to_preview(list_a, "A", source_format="sample"),
+        list_b=entities_to_preview(list_b, "B", source_format="sample"),
+    )
+
+
 @app.get("/presets")
 def presets() -> list[dict]:
     return [p.model_dump() for p in get_presets()]
@@ -82,20 +94,24 @@ async def ingest(
     list_b_json: str | None = Form(None),
 ) -> IngestResponse:
     async def load_side(upload: UploadFile | None, raw_json: str | None, label: str):
-        rows: list[dict] = []
         if upload is not None:
             content = (await upload.read()).decode("utf-8", errors="replace")
-            name = (upload.filename or "").lower()
-            if name.endswith(".csv") or content.lstrip().startswith(("id,", "name,", "POI")):
-                rows = parse_csv_text(content)
-            else:
-                rows = parse_json_payload(content)
-        elif raw_json:
-            rows = parse_json_payload(raw_json)
-        return ingest_rows(rows, label)
+            rows, fmt = sniff_and_parse(content, upload.filename or "")
+            return ingest_rows(
+                rows,
+                label,
+                source_format=fmt,
+                source_filename=upload.filename,
+            )
+        if raw_json:
+            rows, fmt = sniff_and_parse(raw_json, "paste.json")
+            return ingest_rows(rows, label, source_format=fmt, source_filename="paste")
+        return ingest_rows([], label)
 
     a = await load_side(list_a_file, list_a_json, "A")
     b = await load_side(list_b_file, list_b_json, "B")
+    if a.row_count == 0 and b.row_count == 0:
+        raise HTTPException(status_code=400, detail="Provide at least one of list A or list B")
     return IngestResponse(list_a=a, list_b=b)
 
 

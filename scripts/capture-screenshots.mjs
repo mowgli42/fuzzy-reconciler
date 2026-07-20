@@ -1,7 +1,5 @@
 /**
- * Capture demo screenshots for docs/screenshots/
- * Usage: npx playwright test scripts/capture-screenshots.mjs
- * or: node with playwright chromium
+ * Capture operational UI walkthrough images for docs/screenshots/
  */
 import { chromium } from 'playwright'
 import path from 'path'
@@ -25,53 +23,53 @@ async function main() {
   const browser = await chromium.launch({ headless: true })
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
   await page.goto(BASE, { waitUntil: 'networkidle' })
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(400)
   await shot(page, '01-ingestion.png')
 
-  await page.getByRole('button', { name: 'Load Demo Data' }).click()
-  await page.waitForSelector('text=Matching parameters')
-  await page.waitForTimeout(400)
+  await page.getByRole('button', { name: 'Load sample inventories' }).click()
+  await page.waitForSelector('text=Matching thresholds')
+  await page.waitForTimeout(300)
   await shot(page, '02-configuration.png')
 
-  // Ensure Facility Loose if available
   const loose = page.getByRole('button', { name: 'Facility Loose' })
   if (await loose.count()) await loose.click()
 
-  await page.getByRole('button', { name: 'Run Fuzzy Comparison' }).click()
+  await page.getByRole('button', { name: 'Run comparison' }).click()
   await page.waitForSelector('.kpis')
-  await page.waitForTimeout(1200)
+  await page.waitForTimeout(1000)
   await shot(page, '03-results-dashboard.png')
 
-  // Filter temporal
   const temporal = page.getByRole('button', { name: 'Temporal' }).first()
   if (await temporal.count()) await temporal.click()
-  await page.waitForTimeout(400)
-  // Click first table row
-  const row = page.locator('.table-wrap tbody tr').first()
-  await row.click()
+  await page.locator('.table-wrap tbody tr').first().click()
   await page.waitForSelector('aside.panel')
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(400)
   await shot(page, '04-detail-temporal.png')
 
-  // Clear temporal filter, open spatial
   if (await temporal.count()) await temporal.click()
   const spatial = page.getByRole('button', { name: 'Spatial' }).first()
   if (await spatial.count()) await spatial.click()
-  await page.waitForTimeout(300)
   await page.locator('.table-wrap tbody tr').first().click()
-  await page.waitForTimeout(600)
+  await page.waitForTimeout(400)
+
+  // Keep separate disposition + commit
+  await page.getByRole('complementary').getByRole('button', { name: 'Keep separate' }).click()
+  await page.getByRole('button', { name: 'Commit keep separate' }).click()
+  await page.waitForTimeout(300)
   await shot(page, '05-detail-spatial.png')
 
-  // Confirm a match for master
-  await page.getByRole('button', { name: 'Confirm Match' }).click()
+  // Merge another pair
+  await page.locator('.table-wrap tbody tr').nth(1).click()
+  await page.getByRole('complementary').getByRole('button', { name: 'Merge', exact: true }).click()
+  await page.getByRole('button', { name: 'Commit disposition' }).click()
   await page.waitForTimeout(300)
-  await page.getByRole('button', { name: 'Master (1)' }).click()
+
+  await page.getByRole('button', { name: 'Proceed to Merge board' }).click()
   await page.waitForTimeout(400)
   await shot(page, '06-reconciled-master.png')
 
-  // Map zoom shot — back to results with spatial filter
-  await page.getByRole('button', { name: '← Results' }).click()
-  await page.waitForTimeout(800)
+  await page.getByRole('button', { name: 'Publish working set' }).click()
+  await page.waitForTimeout(300)
   await shot(page, '07-map-spatial-filter.png')
 
   await browser.close()
