@@ -33,6 +33,7 @@ venv.bak/
 node_modules/
 frontend/dist/
 public/
+src/fuzzy_reconciler/web/
 .vite/
 *.local
 .vercel/
