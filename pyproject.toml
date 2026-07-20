@@ -8,11 +8,9 @@ dependencies = [
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.30.0",
     "pydantic>=2.9.0",
-    "pandas>=2.2.0",
     "rapidfuzz>=3.9.0",
     "python-dateutil>=2.9.0",
     "python-multipart>=0.0.9",
-    "aiosqlite>=0.20.0",
 ]
 
 [project.optional-dependencies]
@@ -21,6 +19,9 @@ test = [
     "pytest-bdd>=7.0",
     "httpx>=0.27",
 ]
+database = [
+    "aiosqlite>=0.20.0",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -28,6 +29,9 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fuzzy_reconciler"]
+
+[tool.vercel]
+entrypoint = "api/index.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

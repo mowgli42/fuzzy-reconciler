@@ -8,13 +8,13 @@ client = TestClient(app)
 
 
 def test_health():
-    r = client.get("/health")
+    r = client.get("/api/health")
     assert r.status_code == 200
     assert r.json()["status"] == "ok"
 
 
 def test_demo_sample():
-    r = client.get("/demo/sample")
+    r = client.get("/api/demo/sample")
     assert r.status_code == 200
     data = r.json()
     assert len(data["list_a"]) > 20
@@ -22,7 +22,7 @@ def test_demo_sample():
 
 
 def test_presets():
-    r = client.get("/presets")
+    r = client.get("/api/presets")
     assert r.status_code == 200
     ids = {p["id"] for p in r.json()}
     assert "poi-strict" in ids
@@ -30,7 +30,7 @@ def test_presets():
 
 
 def test_compare_demo():
-    r = client.post("/compare/demo", json={
+    r = client.post("/api/compare/demo", json={
         "max_geo_distance_m": 350,
         "min_name_similarity": 75,
         "min_attr_similarity": 0.55,

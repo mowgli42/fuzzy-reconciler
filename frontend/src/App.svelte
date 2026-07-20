@@ -20,6 +20,14 @@
     recordDecline,
     removeDecline,
   } from './lib/ledger.js'
+  import {
+    clearSession,
+    getPersistenceMode,
+    loadSession,
+    persistenceLabel,
+    saveSession,
+    setPersistenceMode,
+  } from './lib/session.js'
 
   const STEPS = [
     { id: 'ingest', label: 'Ingest' },
@@ -50,15 +58,71 @@
   let declineLedger = $state([])
   let published = $state(false)
   let publishNote = $state('')
+  let persistenceMode = $state('browser')
+
+  function persistLite() {
+    saveSession({
+      step,
+      activePreset,
+      config,
+      decisions,
+      workingSet,
+      published,
+      publishNote,
+      // previews/entities can be large — restore declines from ledger; re-load sample if needed
+    })
+  }
 
   onMount(async () => {
+    persistenceMode = getPersistenceMode()
     declineLedger = loadDeclineLedger()
+    const saved = loadSession()
+    if (saved && persistenceMode === 'browser') {
+      if (saved.config) config = saved.config
+      if (saved.activePreset) activePreset = saved.activePreset
+      if (saved.decisions) decisions = saved.decisions
+      if (saved.workingSet) workingSet = saved.workingSet
+      if (saved.published) published = saved.published
+      if (saved.publishNote) publishNote = saved.publishNote
+      if (saved.step && ['ingest', 'config', 'results', 'merge'].includes(saved.step)) {
+        // Don't jump to results without entities — stay ingest unless we have working merge context
+        if (saved.step === 'merge' || saved.step === 'results') step = saved.workingSet?.length ? 'merge' : 'ingest'
+        else step = saved.step === 'config' ? 'ingest' : saved.step
+      }
+    }
     try {
       presets = await fetchPresets()
     } catch (e) {
       console.warn(e)
     }
   })
+
+  $effect(() => {
+    // autosave lightweight session when browser persistence is on
+    decisions
+    workingSet
+    published
+    config
+    activePreset
+    if (typeof window !== 'undefined') persistLite()
+  })
+
+  function togglePersistence() {
+    const next = persistenceMode === 'browser' ? 'none' : 'browser'
+    setPersistenceMode(next)
+    persistenceMode = next
+    if (next === 'none') clearSession()
+  }
+
+  function clearLocalHistory() {
+    clearSession()
+    declineLedger = []
+    localStorage.removeItem('fr-decline-ledger-v1')
+    decisions = {}
+    workingSet = []
+    published = false
+    publishNote = ''
+  }
 
   let ingestReady = $derived(
     !!previewA?.row_count &&
@@ -383,6 +447,19 @@
       {/each}
     </nav>
   </header>
+
+  <div class="persist-banner" role="note">
+    <span>
+      <strong>Demo persistence:</strong> {persistenceLabel(persistenceMode)}.
+      Server is stateless — no shared database. Shared multi-user history is optional later.
+    </span>
+    <div class="persist-actions">
+      <button type="button" onclick={togglePersistence}>
+        {persistenceMode === 'browser' ? 'Disable browser cache' : 'Enable browser cache'}
+      </button>
+      <button type="button" onclick={clearLocalHistory}>Clear local history</button>
+    </div>
+  </div>
 
   {#if error}
     <div class="error" role="alert">{error}</div>
@@ -778,9 +855,38 @@
     justify-content: space-between;
     gap: 1rem;
     align-items: flex-end;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     border-bottom: 1px solid var(--line);
     padding-bottom: 1rem;
+  }
+  .persist-banner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: rgba(16, 40, 51, 0.9);
+    font-size: 0.8rem;
+    color: var(--paper-dim);
+  }
+  .persist-banner strong {
+    color: var(--amber);
+  }
+  .persist-actions {
+    display: flex;
+    gap: 0.35rem;
+  }
+  .persist-actions button {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--paper-dim);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.72rem;
   }
   .brand {
     display: flex;
