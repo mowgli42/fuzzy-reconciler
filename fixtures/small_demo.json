@@ -1,0 +1,2617 @@
+{
+  "meta": {
+    "description": "Controlled small demo for temporal + spatial fuzzy reconciliation",
+    "origin": {
+      "lat": 28.3922,
+      "lon": -80.6077
+    },
+    "counts": {
+      "list_a": 55,
+      "list_b": 55,
+      "ground_truth": 30
+    },
+    "seed": 42
+  },
+  "list_a": [
+    {
+      "id": "A-EX-0",
+      "name": "Site A-100",
+      "lat": 28.41224,
+      "lon": -80.685305,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 20
+      },
+      "original_row": {
+        "POI_Name": "Site A-100",
+        "latitude": 28.41224,
+        "longitude": -80.685305,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 20
+      }
+    },
+    {
+      "id": "A-EX-1",
+      "name": "Site B-101",
+      "lat": 28.426188,
+      "lon": -80.57883,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 22
+      },
+      "original_row": {
+        "POI_Name": "Site B-101",
+        "latitude": 28.426188,
+        "longitude": -80.57883,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 22
+      }
+    },
+    {
+      "id": "A-EX-2",
+      "name": "Site C-102",
+      "lat": 28.380978,
+      "lon": -80.684523,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 24
+      },
+      "original_row": {
+        "POI_Name": "Site C-102",
+        "latitude": 28.380978,
+        "longitude": -80.684523,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 24
+      }
+    },
+    {
+      "id": "A-EX-3",
+      "name": "Site D-103",
+      "lat": 28.324149,
+      "lon": -80.656905,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 26
+      },
+      "original_row": {
+        "POI_Name": "Site D-103",
+        "latitude": 28.324149,
+        "longitude": -80.656905,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 26
+      }
+    },
+    {
+      "id": "A-EX-4",
+      "name": "Site E-104",
+      "lat": 28.352019,
+      "lon": -80.593116,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 28
+      },
+      "original_row": {
+        "POI_Name": "Site E-104",
+        "latitude": 28.352019,
+        "longitude": -80.593116,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 28
+      }
+    },
+    {
+      "id": "A-EX-5",
+      "name": "Site F-105",
+      "lat": 28.436155,
+      "lon": -80.575327,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "degraded",
+        "height_m": 30
+      },
+      "original_row": {
+        "POI_Name": "Site F-105",
+        "latitude": 28.436155,
+        "longitude": -80.575327,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Verizon",
+        "status": "degraded",
+        "height_m": 30
+      }
+    },
+    {
+      "id": "A-EX-6",
+      "name": "Site G-106",
+      "lat": 28.457915,
+      "lon": -80.634398,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 32
+      },
+      "original_row": {
+        "POI_Name": "Site G-106",
+        "latitude": 28.457915,
+        "longitude": -80.634398,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 32
+      }
+    },
+    {
+      "id": "A-EX-7",
+      "name": "Site H-107",
+      "lat": 28.442145,
+      "lon": -80.590753,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 34
+      },
+      "original_row": {
+        "POI_Name": "Site H-107",
+        "latitude": 28.442145,
+        "longitude": -80.590753,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 34
+      }
+    },
+    {
+      "id": "A-EX-8",
+      "name": "Site I-108",
+      "lat": 28.397407,
+      "lon": -80.530401,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 36
+      },
+      "original_row": {
+        "POI_Name": "Site I-108",
+        "latitude": 28.397407,
+        "longitude": -80.530401,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 36
+      }
+    },
+    {
+      "id": "A-EX-9",
+      "name": "Site J-109",
+      "lat": 28.439545,
+      "lon": -80.588336,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 38
+      },
+      "original_row": {
+        "POI_Name": "Site J-109",
+        "latitude": 28.439545,
+        "longitude": -80.588336,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 38
+      }
+    },
+    {
+      "id": "A-EX-10",
+      "name": "Site K-110",
+      "lat": 28.421603,
+      "lon": -80.681904,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 40
+      },
+      "original_row": {
+        "POI_Name": "Site K-110",
+        "latitude": 28.421603,
+        "longitude": -80.681904,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 40
+      }
+    },
+    {
+      "id": "A-EX-11",
+      "name": "Site L-111",
+      "lat": 28.331804,
+      "lon": -80.651357,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "degraded",
+        "height_m": 42
+      },
+      "original_row": {
+        "POI_Name": "Site L-111",
+        "latitude": 28.331804,
+        "longitude": -80.651357,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "AT&T",
+        "status": "degraded",
+        "height_m": 42
+      }
+    },
+    {
+      "id": "A-EX-12",
+      "name": "Site M-112",
+      "lat": 28.411702,
+      "lon": -80.629784,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 44
+      },
+      "original_row": {
+        "POI_Name": "Site M-112",
+        "latitude": 28.411702,
+        "longitude": -80.629784,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 44
+      }
+    },
+    {
+      "id": "A-EX-13",
+      "name": "Site N-113",
+      "lat": 28.358708,
+      "lon": -80.536358,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 46
+      },
+      "original_row": {
+        "POI_Name": "Site N-113",
+        "latitude": 28.358708,
+        "longitude": -80.536358,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 46
+      }
+    },
+    {
+      "id": "A-EX-14",
+      "name": "Site O-114",
+      "lat": 28.344933,
+      "lon": -80.570265,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 48
+      },
+      "original_row": {
+        "POI_Name": "Site O-114",
+        "latitude": 28.344933,
+        "longitude": -80.570265,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 48
+      }
+    },
+    {
+      "id": "A-EX-15",
+      "name": "Site P-115",
+      "lat": 28.462559,
+      "lon": -80.584826,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 50
+      },
+      "original_row": {
+        "POI_Name": "Site P-115",
+        "latitude": 28.462559,
+        "longitude": -80.584826,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 50
+      }
+    },
+    {
+      "id": "A-EX-16",
+      "name": "Site Q-116",
+      "lat": 28.441478,
+      "lon": -80.562606,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 52
+      },
+      "original_row": {
+        "POI_Name": "Site Q-116",
+        "latitude": 28.441478,
+        "longitude": -80.562606,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 52
+      }
+    },
+    {
+      "id": "A-EX-17",
+      "name": "Site R-117",
+      "lat": 28.365675,
+      "lon": -80.645647,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 54
+      },
+      "original_row": {
+        "POI_Name": "Site R-117",
+        "latitude": 28.365675,
+        "longitude": -80.645647,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 54
+      }
+    },
+    {
+      "id": "A-TV-0",
+      "name": "Cell Site Alpha-7",
+      "lat": 28.40298,
+      "lon": -80.611785,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 48,
+        "power_kw": 10
+      },
+      "original_row": {
+        "POI_Name": "Cell Site Alpha-7",
+        "latitude": 28.40298,
+        "longitude": -80.611785,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 48,
+        "power_kw": 10
+      }
+    },
+    {
+      "id": "A-TV-1",
+      "name": "Harbor Sensor Hub",
+      "lat": 28.372437,
+      "lon": -80.592383,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 12,
+        "power_kw": 11
+      },
+      "original_row": {
+        "POI_Name": "Harbor Sensor Hub",
+        "latitude": 28.372437,
+        "longitude": -80.592383,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 12,
+        "power_kw": 11
+      }
+    },
+    {
+      "id": "A-TV-2",
+      "name": "Merritt Facility West",
+      "lat": 28.423641,
+      "lon": -80.579108,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 32,
+        "power_kw": 12
+      },
+      "original_row": {
+        "POI_Name": "Merritt Facility West",
+        "latitude": 28.423641,
+        "longitude": -80.579108,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 32,
+        "power_kw": 12
+      }
+    },
+    {
+      "id": "A-TV-3",
+      "name": "POI Launch Overlook",
+      "lat": 28.384115,
+      "lon": -80.640377,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 5,
+        "power_kw": 13
+      },
+      "original_row": {
+        "POI_Name": "POI Launch Overlook",
+        "latitude": 28.384115,
+        "longitude": -80.640377,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 5,
+        "power_kw": 13
+      }
+    },
+    {
+      "id": "A-TV-4",
+      "name": "Tower Array Canaveral-3",
+      "lat": 28.435319,
+      "lon": -80.626081,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 55,
+        "power_kw": 14
+      },
+      "original_row": {
+        "POI_Name": "Tower Array Canaveral-3",
+        "latitude": 28.435319,
+        "longitude": -80.626081,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 55,
+        "power_kw": 14
+      }
+    },
+    {
+      "id": "A-TV-5",
+      "name": "Inlet Microwave Relay",
+      "lat": 28.39759,
+      "lon": -80.564812,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 40,
+        "power_kw": 15
+      },
+      "original_row": {
+        "POI_Name": "Inlet Microwave Relay",
+        "latitude": 28.39759,
+        "longitude": -80.564812,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 40,
+        "power_kw": 15
+      }
+    },
+    {
+      "id": "A-TV-6",
+      "name": "Banana River Gauge",
+      "lat": 28.355369,
+      "lon": -80.59851,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 8,
+        "power_kw": 16
+      },
+      "original_row": {
+        "POI_Name": "Banana River Gauge",
+        "latitude": 28.355369,
+        "longitude": -80.59851,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 8,
+        "power_kw": 16
+      }
+    },
+    {
+      "id": "A-SP-0",
+      "name": "North Tower Array",
+      "lat": 28.410166,
+      "lon": -80.597489,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 45,
+        "power_kw": 25,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "North Tower Array",
+        "latitude": 28.410166,
+        "longitude": -80.597489,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 45,
+        "power_kw": 25,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "A-SP-1",
+      "name": "South Comms Cluster",
+      "lat": 28.378725,
+      "lon": -80.633229,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "degraded",
+        "height_m": 38,
+        "power_kw": 26,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "South Comms Cluster",
+        "latitude": 28.378725,
+        "longitude": -80.633229,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "degraded",
+        "height_m": 38,
+        "power_kw": 26,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "A-SP-2",
+      "name": "East Sensor Lattice",
+      "lat": 28.419149,
+      "lon": -80.612806,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 15,
+        "power_kw": 27,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "East Sensor Lattice",
+        "latitude": 28.419149,
+        "longitude": -80.612806,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 15,
+        "power_kw": 27,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "A-SP-3",
+      "name": "Central Yard Depot",
+      "lat": 28.387708,
+      "lon": -80.587277,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 22,
+        "power_kw": 28,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "Central Yard Depot",
+        "latitude": 28.387708,
+        "longitude": -80.587277,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 22,
+        "power_kw": 28,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "A-SP-4",
+      "name": "West Link Spur",
+      "lat": 28.432624,
+      "lon": -80.57196,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 50,
+        "power_kw": 29,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "West Link Spur",
+        "latitude": 28.432624,
+        "longitude": -80.57196,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 50,
+        "power_kw": 29,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "A-UQ-0",
+      "name": "Unique Alpha 0",
+      "lat": 28.455171,
+      "lon": -80.626777,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 10
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 0",
+        "latitude": 28.455171,
+        "longitude": -80.626777,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 10
+      }
+    },
+    {
+      "id": "A-UQ-1",
+      "name": "Unique Alpha 1",
+      "lat": 28.367356,
+      "lon": -80.5842,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 11
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 1",
+        "latitude": 28.367356,
+        "longitude": -80.5842,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 11
+      }
+    },
+    {
+      "id": "A-UQ-2",
+      "name": "Unique Alpha 2",
+      "lat": 28.398477,
+      "lon": -80.492251,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 12
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 2",
+        "latitude": 28.398477,
+        "longitude": -80.492251,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 12
+      }
+    },
+    {
+      "id": "A-UQ-3",
+      "name": "Unique Alpha 3",
+      "lat": 28.431068,
+      "lon": -80.702163,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 13
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 3",
+        "latitude": 28.431068,
+        "longitude": -80.702163,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 13
+      }
+    },
+    {
+      "id": "A-UQ-4",
+      "name": "Unique Alpha 4",
+      "lat": 28.446288,
+      "lon": -80.541873,
+      "analyzed_at": "2026-03-06T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 14
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 4",
+        "latitude": 28.446288,
+        "longitude": -80.541873,
+        "last_analyzed": "2026-03-06T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 14
+      }
+    },
+    {
+      "id": "A-UQ-5",
+      "name": "Unique Alpha 5",
+      "lat": 28.308453,
+      "lon": -80.623687,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 15
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 5",
+        "latitude": 28.308453,
+        "longitude": -80.623687,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 15
+      }
+    },
+    {
+      "id": "A-UQ-6",
+      "name": "Unique Alpha 6",
+      "lat": 28.285102,
+      "lon": -80.553271,
+      "analyzed_at": "2026-03-05T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 16
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 6",
+        "latitude": 28.285102,
+        "longitude": -80.553271,
+        "last_analyzed": "2026-03-05T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 16
+      }
+    },
+    {
+      "id": "A-UQ-7",
+      "name": "Unique Alpha 7",
+      "lat": 28.493937,
+      "lon": -80.5435,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 17
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 7",
+        "latitude": 28.493937,
+        "longitude": -80.5435,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 17
+      }
+    },
+    {
+      "id": "A-UQ-8",
+      "name": "Unique Alpha 8",
+      "lat": 28.48116,
+      "lon": -80.516896,
+      "analyzed_at": "2026-03-05T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "maintenance",
+        "height_m": 18
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 8",
+        "latitude": 28.48116,
+        "longitude": -80.516896,
+        "last_analyzed": "2026-03-05T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Space Coast Ops",
+        "status": "maintenance",
+        "height_m": 18
+      }
+    },
+    {
+      "id": "A-UQ-9",
+      "name": "Unique Alpha 9",
+      "lat": 28.465862,
+      "lon": -80.605822,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 19
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 9",
+        "latitude": 28.465862,
+        "longitude": -80.605822,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 19
+      }
+    },
+    {
+      "id": "A-UQ-10",
+      "name": "Unique Alpha 10",
+      "lat": 28.317354,
+      "lon": -80.543365,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 20
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 10",
+        "latitude": 28.317354,
+        "longitude": -80.543365,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 20
+      }
+    },
+    {
+      "id": "A-UQ-11",
+      "name": "Unique Alpha 11",
+      "lat": 28.489972,
+      "lon": -80.504172,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 21
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 11",
+        "latitude": 28.489972,
+        "longitude": -80.504172,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 21
+      }
+    },
+    {
+      "id": "A-UQ-12",
+      "name": "Unique Alpha 12",
+      "lat": 28.413532,
+      "lon": -80.610492,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 22
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 12",
+        "latitude": 28.413532,
+        "longitude": -80.610492,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 22
+      }
+    },
+    {
+      "id": "A-UQ-13",
+      "name": "Unique Alpha 13",
+      "lat": 28.484711,
+      "lon": -80.514885,
+      "analyzed_at": "2026-03-05T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 23
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 13",
+        "latitude": 28.484711,
+        "longitude": -80.514885,
+        "last_analyzed": "2026-03-05T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 23
+      }
+    },
+    {
+      "id": "A-UQ-14",
+      "name": "Unique Alpha 14",
+      "lat": 28.336027,
+      "lon": -80.671206,
+      "analyzed_at": "2026-03-10T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 24
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 14",
+        "latitude": 28.336027,
+        "longitude": -80.671206,
+        "last_analyzed": "2026-03-10T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 24
+      }
+    },
+    {
+      "id": "A-UQ-15",
+      "name": "Unique Alpha 15",
+      "lat": 28.48856,
+      "lon": -80.709245,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "degraded",
+        "height_m": 25
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 15",
+        "latitude": 28.48856,
+        "longitude": -80.709245,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Verizon",
+        "status": "degraded",
+        "height_m": 25
+      }
+    },
+    {
+      "id": "A-UQ-16",
+      "name": "Unique Alpha 16",
+      "lat": 28.460333,
+      "lon": -80.490559,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 26
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 16",
+        "latitude": 28.460333,
+        "longitude": -80.490559,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 26
+      }
+    },
+    {
+      "id": "A-UQ-17",
+      "name": "Unique Alpha 17",
+      "lat": 28.449512,
+      "lon": -80.698772,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 27
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 17",
+        "latitude": 28.449512,
+        "longitude": -80.698772,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 27
+      }
+    },
+    {
+      "id": "A-UQ-18",
+      "name": "Unique Alpha 18",
+      "lat": 28.488538,
+      "lon": -80.689769,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 28
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 18",
+        "latitude": 28.488538,
+        "longitude": -80.689769,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 28
+      }
+    },
+    {
+      "id": "A-UQ-19",
+      "name": "Unique Alpha 19",
+      "lat": 28.472495,
+      "lon": -80.626537,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 29
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 19",
+        "latitude": 28.472495,
+        "longitude": -80.626537,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 29
+      }
+    },
+    {
+      "id": "A-UQ-20",
+      "name": "Unique Alpha 20",
+      "lat": 28.484671,
+      "lon": -80.545141,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 30
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 20",
+        "latitude": 28.484671,
+        "longitude": -80.545141,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 30
+      }
+    },
+    {
+      "id": "A-UQ-21",
+      "name": "Unique Alpha 21",
+      "lat": 28.438111,
+      "lon": -80.632454,
+      "analyzed_at": "2026-03-11T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 31
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 21",
+        "latitude": 28.438111,
+        "longitude": -80.632454,
+        "last_analyzed": "2026-03-11T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 31
+      }
+    },
+    {
+      "id": "A-UQ-22",
+      "name": "Unique Alpha 22",
+      "lat": 28.424513,
+      "lon": -80.62287,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 32
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 22",
+        "latitude": 28.424513,
+        "longitude": -80.62287,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 32
+      }
+    },
+    {
+      "id": "A-UQ-23",
+      "name": "Unique Alpha 23",
+      "lat": 28.381741,
+      "lon": -80.669482,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 33
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 23",
+        "latitude": 28.381741,
+        "longitude": -80.669482,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 33
+      }
+    },
+    {
+      "id": "A-UQ-24",
+      "name": "Unique Alpha 24",
+      "lat": 28.357292,
+      "lon": -80.586058,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 34
+      },
+      "original_row": {
+        "POI_Name": "Unique Alpha 24",
+        "latitude": 28.357292,
+        "longitude": -80.586058,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 34
+      }
+    }
+  ],
+  "list_b": [
+    {
+      "id": "B-EX-0",
+      "name": "Site A 100",
+      "lat": 28.412207,
+      "lon": -80.68535,
+      "analyzed_at": "2026-03-01T12:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 20
+      },
+      "original_row": {
+        "POI_Name": "Site A 100",
+        "latitude": 28.412207,
+        "longitude": -80.68535,
+        "last_analyzed": "2026-03-01T12:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 20
+      }
+    },
+    {
+      "id": "B-EX-1",
+      "name": "Site B-101",
+      "lat": 28.426244,
+      "lon": -80.578898,
+      "analyzed_at": "2026-03-02T12:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 22
+      },
+      "original_row": {
+        "POI_Name": "Site B-101",
+        "latitude": 28.426244,
+        "longitude": -80.578898,
+        "last_analyzed": "2026-03-02T12:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 22
+      }
+    },
+    {
+      "id": "B-EX-2",
+      "name": "Site C-102",
+      "lat": 28.380937,
+      "lon": -80.684522,
+      "analyzed_at": "2026-03-03T12:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 24
+      },
+      "original_row": {
+        "POI_Name": "Site C-102",
+        "latitude": 28.380937,
+        "longitude": -80.684522,
+        "last_analyzed": "2026-03-03T12:00:00Z",
+        "facility_type": "sensor",
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 24
+      }
+    },
+    {
+      "id": "B-EX-3",
+      "name": "Site D-103",
+      "lat": 28.324171,
+      "lon": -80.656897,
+      "analyzed_at": "2026-03-01T12:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 26
+      },
+      "original_row": {
+        "POI_Name": "Site D-103",
+        "latitude": 28.324171,
+        "longitude": -80.656897,
+        "last_analyzed": "2026-03-01T12:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 26
+      }
+    },
+    {
+      "id": "B-EX-4",
+      "name": "Site E-104",
+      "lat": 28.352063,
+      "lon": -80.593196,
+      "analyzed_at": "2026-03-02T12:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 28
+      },
+      "original_row": {
+        "POI_Name": "Site E-104",
+        "latitude": 28.352063,
+        "longitude": -80.593196,
+        "last_analyzed": "2026-03-02T12:00:00Z",
+        "facility_type": "tower",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 28
+      }
+    },
+    {
+      "id": "B-EX-5",
+      "name": "Site F 105",
+      "lat": 28.436132,
+      "lon": -80.575384,
+      "analyzed_at": "2026-03-03T12:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "degraded",
+        "height_m": 30
+      },
+      "original_row": {
+        "POI_Name": "Site F 105",
+        "latitude": 28.436132,
+        "longitude": -80.575384,
+        "last_analyzed": "2026-03-03T12:00:00Z",
+        "facility_type": "facility",
+        "operator": "Verizon",
+        "status": "degraded",
+        "height_m": 30
+      }
+    },
+    {
+      "id": "B-EX-6",
+      "name": "Site G-106",
+      "lat": 28.457857,
+      "lon": -80.634464,
+      "analyzed_at": "2026-03-01T12:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 32
+      },
+      "original_row": {
+        "POI_Name": "Site G-106",
+        "latitude": 28.457857,
+        "longitude": -80.634464,
+        "last_analyzed": "2026-03-01T12:00:00Z",
+        "facility_type": "sensor",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 32
+      }
+    },
+    {
+      "id": "B-EX-7",
+      "name": "Site H-107",
+      "lat": 28.442189,
+      "lon": -80.590715,
+      "analyzed_at": "2026-03-02T12:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 34
+      },
+      "original_row": {
+        "POI_Name": "Site H-107",
+        "latitude": 28.442189,
+        "longitude": -80.590715,
+        "last_analyzed": "2026-03-02T12:00:00Z",
+        "facility_type": "poi",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 34
+      }
+    },
+    {
+      "id": "B-EX-8",
+      "name": "Site I-108",
+      "lat": 28.39739,
+      "lon": -80.530393,
+      "analyzed_at": "2026-03-03T12:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 36
+      },
+      "original_row": {
+        "POI_Name": "Site I-108",
+        "latitude": 28.39739,
+        "longitude": -80.530393,
+        "last_analyzed": "2026-03-03T12:00:00Z",
+        "facility_type": "tower",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 36
+      }
+    },
+    {
+      "id": "B-EX-9",
+      "name": "Site J-109",
+      "lat": 28.439597,
+      "lon": -80.588323,
+      "analyzed_at": "2026-03-01T12:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 38
+      },
+      "original_row": {
+        "POI_Name": "Site J-109",
+        "latitude": 28.439597,
+        "longitude": -80.588323,
+        "last_analyzed": "2026-03-01T12:00:00Z",
+        "facility_type": "facility",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 38
+      }
+    },
+    {
+      "id": "B-EX-10",
+      "name": "Site K 110",
+      "lat": 28.421564,
+      "lon": -80.681939,
+      "analyzed_at": "2026-03-02T12:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 40
+      },
+      "original_row": {
+        "POI_Name": "Site K 110",
+        "latitude": 28.421564,
+        "longitude": -80.681939,
+        "last_analyzed": "2026-03-02T12:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 40
+      }
+    },
+    {
+      "id": "B-EX-11",
+      "name": "Site L-111",
+      "lat": 28.331746,
+      "lon": -80.651394,
+      "analyzed_at": "2026-03-03T12:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 42
+      },
+      "original_row": {
+        "POI_Name": "Site L-111",
+        "latitude": 28.331746,
+        "longitude": -80.651394,
+        "last_analyzed": "2026-03-03T12:00:00Z",
+        "facility_type": "poi",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 42
+      }
+    },
+    {
+      "id": "B-EX-12",
+      "name": "Site M-112",
+      "lat": 28.411683,
+      "lon": -80.629832,
+      "analyzed_at": "2026-03-01T12:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 44
+      },
+      "original_row": {
+        "POI_Name": "Site M-112",
+        "latitude": 28.411683,
+        "longitude": -80.629832,
+        "last_analyzed": "2026-03-01T12:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 44
+      }
+    },
+    {
+      "id": "B-EX-13",
+      "name": "Site N-113",
+      "lat": 28.358729,
+      "lon": -80.53634,
+      "analyzed_at": "2026-03-02T12:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 46
+      },
+      "original_row": {
+        "POI_Name": "Site N-113",
+        "latitude": 28.358729,
+        "longitude": -80.53634,
+        "last_analyzed": "2026-03-02T12:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 46
+      }
+    },
+    {
+      "id": "B-EX-14",
+      "name": "Site O-114",
+      "lat": 28.344884,
+      "lon": -80.570284,
+      "analyzed_at": "2026-03-03T12:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 48
+      },
+      "original_row": {
+        "POI_Name": "Site O-114",
+        "latitude": 28.344884,
+        "longitude": -80.570284,
+        "last_analyzed": "2026-03-03T12:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 48
+      }
+    },
+    {
+      "id": "B-EX-15",
+      "name": "Site P 115",
+      "lat": 28.462567,
+      "lon": -80.584796,
+      "analyzed_at": "2026-03-01T12:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 50
+      },
+      "original_row": {
+        "POI_Name": "Site P 115",
+        "latitude": 28.462567,
+        "longitude": -80.584796,
+        "last_analyzed": "2026-03-01T12:00:00Z",
+        "facility_type": "poi",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 50
+      }
+    },
+    {
+      "id": "B-EX-16",
+      "name": "Site Q-116",
+      "lat": 28.441439,
+      "lon": -80.562683,
+      "analyzed_at": "2026-03-02T12:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 52
+      },
+      "original_row": {
+        "POI_Name": "Site Q-116",
+        "latitude": 28.441439,
+        "longitude": -80.562683,
+        "last_analyzed": "2026-03-02T12:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 52
+      }
+    },
+    {
+      "id": "B-EX-17",
+      "name": "Site R-117",
+      "lat": 28.365634,
+      "lon": -80.645575,
+      "analyzed_at": "2026-03-03T12:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 54
+      },
+      "original_row": {
+        "POI_Name": "Site R-117",
+        "latitude": 28.365634,
+        "longitude": -80.645575,
+        "last_analyzed": "2026-03-03T12:00:00Z",
+        "facility_type": "facility",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 54
+      }
+    },
+    {
+      "id": "B-TV-0",
+      "name": "Cell Site Alpha-7",
+      "lat": 28.403261,
+      "lon": -80.61186,
+      "analyzed_at": "2026-03-06T14:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 49,
+        "power_kw": 10
+      },
+      "original_row": {
+        "POI_Name": "Cell Site Alpha-7",
+        "latitude": 28.403261,
+        "longitude": -80.61186,
+        "last_analyzed": "2026-03-06T14:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 49,
+        "power_kw": 10
+      }
+    },
+    {
+      "id": "B-TV-1",
+      "name": "Harbor Sensor Hub",
+      "lat": 28.372589,
+      "lon": -80.592214,
+      "analyzed_at": "2026-03-09T14:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 13,
+        "power_kw": 11
+      },
+      "original_row": {
+        "POI_Name": "Harbor Sensor Hub",
+        "latitude": 28.372589,
+        "longitude": -80.592214,
+        "last_analyzed": "2026-03-09T14:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 13,
+        "power_kw": 11
+      }
+    },
+    {
+      "id": "B-TV-2",
+      "name": "Merritt Facility West",
+      "lat": 28.423724,
+      "lon": -80.579255,
+      "analyzed_at": "2026-03-12T14:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 33,
+        "power_kw": 12
+      },
+      "original_row": {
+        "POI_Name": "Merritt Facility West",
+        "latitude": 28.423724,
+        "longitude": -80.579255,
+        "last_analyzed": "2026-03-12T14:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 33,
+        "power_kw": 12
+      }
+    },
+    {
+      "id": "B-TV-3",
+      "name": "POI Launch Overlook",
+      "lat": 28.384361,
+      "lon": -80.640406,
+      "analyzed_at": "2026-03-15T14:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "maintenance",
+        "height_m": 6,
+        "power_kw": 13
+      },
+      "original_row": {
+        "POI_Name": "POI Launch Overlook",
+        "latitude": 28.384361,
+        "longitude": -80.640406,
+        "last_analyzed": "2026-03-15T14:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "maintenance",
+        "height_m": 6,
+        "power_kw": 13
+      }
+    },
+    {
+      "id": "B-TV-4",
+      "name": "Tower Array Canaveral-3",
+      "lat": 28.435461,
+      "lon": -80.625877,
+      "analyzed_at": "2026-03-18T14:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 55,
+        "power_kw": 14
+      },
+      "original_row": {
+        "POI_Name": "Tower Array Canaveral-3",
+        "latitude": 28.435461,
+        "longitude": -80.625877,
+        "last_analyzed": "2026-03-18T14:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 55,
+        "power_kw": 14
+      }
+    },
+    {
+      "id": "B-TV-5",
+      "name": "Inlet Microwave Relay",
+      "lat": 28.397772,
+      "lon": -80.564979,
+      "analyzed_at": "2026-03-21T14:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 40,
+        "power_kw": 15
+      },
+      "original_row": {
+        "POI_Name": "Inlet Microwave Relay",
+        "latitude": 28.397772,
+        "longitude": -80.564979,
+        "last_analyzed": "2026-03-21T14:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "degraded",
+        "height_m": 40,
+        "power_kw": 15
+      }
+    },
+    {
+      "id": "B-TV-6",
+      "name": "Banana River Gauge",
+      "lat": 28.355646,
+      "lon": -80.598651,
+      "analyzed_at": "2026-03-24T14:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 8,
+        "power_kw": 16
+      },
+      "original_row": {
+        "POI_Name": "Banana River Gauge",
+        "latitude": 28.355646,
+        "longitude": -80.598651,
+        "last_analyzed": "2026-03-24T14:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 8,
+        "power_kw": 16
+      }
+    },
+    {
+      "id": "B-SP-0",
+      "name": "Site NT-07",
+      "lat": 28.410651,
+      "lon": -80.595834,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 47,
+        "power_kw": 25,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "Site NT-07",
+        "latitude": 28.410651,
+        "longitude": -80.595834,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 47,
+        "power_kw": 25,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "B-SP-1",
+      "name": "SCC Pad-12",
+      "lat": 28.379318,
+      "lon": -80.631207,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 40,
+        "power_kw": 26,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "SCC Pad-12",
+        "latitude": 28.379318,
+        "longitude": -80.631207,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 40,
+        "power_kw": 26,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "B-SP-2",
+      "name": "ESL Node 4",
+      "lat": 28.419527,
+      "lon": -80.611519,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 16,
+        "power_kw": 27,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "ESL Node 4",
+        "latitude": 28.419527,
+        "longitude": -80.611519,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "maintenance",
+        "height_m": 16,
+        "power_kw": 27,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "B-SP-3",
+      "name": "CYD-Main",
+      "lat": 28.388517,
+      "lon": -80.58452,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 24,
+        "power_kw": 28,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "CYD-Main",
+        "latitude": 28.388517,
+        "longitude": -80.58452,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 24,
+        "power_kw": 28,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "B-SP-4",
+      "name": "WLS Relay B",
+      "lat": 28.433325,
+      "lon": -80.56957,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 52,
+        "power_kw": 29,
+        "band": "n78"
+      },
+      "original_row": {
+        "POI_Name": "WLS Relay B",
+        "latitude": 28.433325,
+        "longitude": -80.56957,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 52,
+        "power_kw": 29,
+        "band": "n78"
+      }
+    },
+    {
+      "id": "B-UQ-0",
+      "name": "Unique Bravo 0",
+      "lat": 28.411267,
+      "lon": -80.728475,
+      "analyzed_at": "2026-03-11T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 15
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 0",
+        "latitude": 28.411267,
+        "longitude": -80.728475,
+        "last_analyzed": "2026-03-11T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "maintenance",
+        "height_m": 15
+      }
+    },
+    {
+      "id": "B-UQ-1",
+      "name": "Unique Bravo 1",
+      "lat": 28.297096,
+      "lon": -80.713719,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 16
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 1",
+        "latitude": 28.297096,
+        "longitude": -80.713719,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "degraded",
+        "height_m": 16
+      }
+    },
+    {
+      "id": "B-UQ-2",
+      "name": "Unique Bravo 2",
+      "lat": 28.469735,
+      "lon": -80.712872,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 17
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 2",
+        "latitude": 28.469735,
+        "longitude": -80.712872,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 17
+      }
+    },
+    {
+      "id": "B-UQ-3",
+      "name": "Unique Bravo 3",
+      "lat": 28.344441,
+      "lon": -80.611275,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 18
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 3",
+        "latitude": 28.344441,
+        "longitude": -80.611275,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 18
+      }
+    },
+    {
+      "id": "B-UQ-4",
+      "name": "Unique Bravo 4",
+      "lat": 28.312928,
+      "lon": -80.500967,
+      "analyzed_at": "2026-03-10T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 19
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 4",
+        "latitude": 28.312928,
+        "longitude": -80.500967,
+        "last_analyzed": "2026-03-10T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 19
+      }
+    },
+    {
+      "id": "B-UQ-5",
+      "name": "Unique Bravo 5",
+      "lat": 28.408631,
+      "lon": -80.670685,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 20
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 5",
+        "latitude": 28.408631,
+        "longitude": -80.670685,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 20
+      }
+    },
+    {
+      "id": "B-UQ-6",
+      "name": "Unique Bravo 6",
+      "lat": 28.458495,
+      "lon": -80.683572,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 21
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 6",
+        "latitude": 28.458495,
+        "longitude": -80.683572,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 21
+      }
+    },
+    {
+      "id": "B-UQ-7",
+      "name": "Unique Bravo 7",
+      "lat": 28.426476,
+      "lon": -80.643408,
+      "analyzed_at": "2026-03-07T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 22
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 7",
+        "latitude": 28.426476,
+        "longitude": -80.643408,
+        "last_analyzed": "2026-03-07T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 22
+      }
+    },
+    {
+      "id": "B-UQ-8",
+      "name": "Unique Bravo 8",
+      "lat": 28.385091,
+      "lon": -80.55156,
+      "analyzed_at": "2026-03-11T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 23
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 8",
+        "latitude": 28.385091,
+        "longitude": -80.55156,
+        "last_analyzed": "2026-03-11T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 23
+      }
+    },
+    {
+      "id": "B-UQ-9",
+      "name": "Unique Bravo 9",
+      "lat": 28.425284,
+      "lon": -80.571875,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "degraded",
+        "height_m": 24
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 9",
+        "latitude": 28.425284,
+        "longitude": -80.571875,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "AT&T",
+        "status": "degraded",
+        "height_m": 24
+      }
+    },
+    {
+      "id": "B-UQ-10",
+      "name": "Unique Bravo 10",
+      "lat": 28.371206,
+      "lon": -80.647083,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 25
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 10",
+        "latitude": 28.371206,
+        "longitude": -80.647083,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 25
+      }
+    },
+    {
+      "id": "B-UQ-11",
+      "name": "Unique Bravo 11",
+      "lat": 28.338012,
+      "lon": -80.683622,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 26
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 11",
+        "latitude": 28.338012,
+        "longitude": -80.683622,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 26
+      }
+    },
+    {
+      "id": "B-UQ-12",
+      "name": "Unique Bravo 12",
+      "lat": 28.314625,
+      "lon": -80.685269,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 27
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 12",
+        "latitude": 28.314625,
+        "longitude": -80.685269,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 27
+      }
+    },
+    {
+      "id": "B-UQ-13",
+      "name": "Unique Bravo 13",
+      "lat": 28.33826,
+      "lon": -80.503969,
+      "analyzed_at": "2026-03-08T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 28
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 13",
+        "latitude": 28.33826,
+        "longitude": -80.503969,
+        "last_analyzed": "2026-03-08T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 28
+      }
+    },
+    {
+      "id": "B-UQ-14",
+      "name": "Unique Bravo 14",
+      "lat": 28.458608,
+      "lon": -80.520462,
+      "analyzed_at": "2026-03-02T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 29
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 14",
+        "latitude": 28.458608,
+        "longitude": -80.520462,
+        "last_analyzed": "2026-03-02T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 29
+      }
+    },
+    {
+      "id": "B-UQ-15",
+      "name": "Unique Bravo 15",
+      "lat": 28.295309,
+      "lon": -80.485339,
+      "analyzed_at": "2026-03-01T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 30
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 15",
+        "latitude": 28.295309,
+        "longitude": -80.485339,
+        "last_analyzed": "2026-03-01T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 30
+      }
+    },
+    {
+      "id": "B-UQ-16",
+      "name": "Unique Bravo 16",
+      "lat": 28.493313,
+      "lon": -80.503209,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 31
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 16",
+        "latitude": 28.493313,
+        "longitude": -80.503209,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 31
+      }
+    },
+    {
+      "id": "B-UQ-17",
+      "name": "Unique Bravo 17",
+      "lat": 28.320258,
+      "lon": -80.611219,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 32
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 17",
+        "latitude": 28.320258,
+        "longitude": -80.611219,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Harbor Net",
+        "status": "active",
+        "height_m": 32
+      }
+    },
+    {
+      "id": "B-UQ-18",
+      "name": "Unique Bravo 18",
+      "lat": 28.470817,
+      "lon": -80.509072,
+      "analyzed_at": "2026-03-03T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 33
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 18",
+        "latitude": 28.470817,
+        "longitude": -80.509072,
+        "last_analyzed": "2026-03-03T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Verizon",
+        "status": "active",
+        "height_m": 33
+      }
+    },
+    {
+      "id": "B-UQ-19",
+      "name": "Unique Bravo 19",
+      "lat": 28.366107,
+      "lon": -80.488764,
+      "analyzed_at": "2026-03-05T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 34
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 19",
+        "latitude": 28.366107,
+        "longitude": -80.488764,
+        "last_analyzed": "2026-03-05T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "AT&T",
+        "status": "maintenance",
+        "height_m": 34
+      }
+    },
+    {
+      "id": "B-UQ-20",
+      "name": "Unique Bravo 20",
+      "lat": 28.484155,
+      "lon": -80.537822,
+      "analyzed_at": "2026-03-05T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 35
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 20",
+        "latitude": 28.484155,
+        "longitude": -80.537822,
+        "last_analyzed": "2026-03-05T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "T-Mobile",
+        "status": "active",
+        "height_m": 35
+      }
+    },
+    {
+      "id": "B-UQ-21",
+      "name": "Unique Bravo 21",
+      "lat": 28.375601,
+      "lon": -80.495623,
+      "analyzed_at": "2026-03-09T10:00:00Z",
+      "category": "facility",
+      "attributes": {
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 36
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 21",
+        "latitude": 28.375601,
+        "longitude": -80.495623,
+        "last_analyzed": "2026-03-09T10:00:00Z",
+        "facility_type": "facility",
+        "operator": "Space Coast Ops",
+        "status": "active",
+        "height_m": 36
+      }
+    },
+    {
+      "id": "B-UQ-22",
+      "name": "Unique Bravo 22",
+      "lat": 28.427099,
+      "lon": -80.610966,
+      "analyzed_at": "2026-03-04T10:00:00Z",
+      "category": "sensor",
+      "attributes": {
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 37
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 22",
+        "latitude": 28.427099,
+        "longitude": -80.610966,
+        "last_analyzed": "2026-03-04T10:00:00Z",
+        "facility_type": "sensor",
+        "operator": "Harbor Net",
+        "status": "degraded",
+        "height_m": 37
+      }
+    },
+    {
+      "id": "B-UQ-23",
+      "name": "Unique Bravo 23",
+      "lat": 28.348371,
+      "lon": -80.492832,
+      "analyzed_at": "2026-03-10T10:00:00Z",
+      "category": "poi",
+      "attributes": {
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 38
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 23",
+        "latitude": 28.348371,
+        "longitude": -80.492832,
+        "last_analyzed": "2026-03-10T10:00:00Z",
+        "facility_type": "poi",
+        "operator": "Verizon",
+        "status": "maintenance",
+        "height_m": 38
+      }
+    },
+    {
+      "id": "B-UQ-24",
+      "name": "Unique Bravo 24",
+      "lat": 28.443024,
+      "lon": -80.715298,
+      "analyzed_at": "2026-03-06T10:00:00Z",
+      "category": "tower",
+      "attributes": {
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 39
+      },
+      "original_row": {
+        "POI_Name": "Unique Bravo 24",
+        "latitude": 28.443024,
+        "longitude": -80.715298,
+        "last_analyzed": "2026-03-06T10:00:00Z",
+        "facility_type": "tower",
+        "operator": "AT&T",
+        "status": "active",
+        "height_m": 39
+      }
+    }
+  ]
+}

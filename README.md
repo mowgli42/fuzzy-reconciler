@@ -6,16 +6,46 @@ Built for data reconciliation, POI/asset/sensor cleaning, import diffing, and op
 
 ---
 
-## Quick Start (Once Built)
+## Quick Start
 
 ```bash
-# After cloning
-make dev
-# or
-docker compose up --build
+# Clone and setup
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[test]"
+python scripts/generate_sample_data.py
+
+# Terminal 1 — API (default 8010; change if free)
+make backend
+
+# Terminal 2 — UI
+cd frontend && npm install && npm run dev
 ```
 
-Open browser → Load Demo Data → tweak config → Run Comparison → explore interactive map + table → reconcile in detail panel → export rich master list with full provenance.
+Open **http://127.0.0.1:5173** → **Load Demo Data** → **Facility Loose** → **Run Fuzzy Comparison**.
+
+Or one-shot API check:
+
+```bash
+curl -s http://127.0.0.1:8010/health
+curl -s -X POST http://127.0.0.1:8010/compare/demo -H 'content-type: application/json' -d '{"max_geo_distance_m":350,"date_tolerance_days":30}'
+```
+
+### Demo screenshots
+
+![Ingestion](docs/screenshots/01-ingestion.png)
+
+![Configuration](docs/screenshots/02-configuration.png)
+
+![Results dashboard](docs/screenshots/03-results-dashboard.png)
+
+![Temporal detail](docs/screenshots/04-detail-temporal.png)
+
+![Spatial detail](docs/screenshots/05-detail-spatial.png)
+
+![Reconciled master](docs/screenshots/06-reconciled-master.png)
+
+Re-capture with `node scripts/capture-screenshots.mjs` (API + Vite must be running).
 
 ---
 
@@ -240,6 +270,6 @@ PRs welcome. Questions or spec tweaks? Open an issue or edit the OpenSpec direct
 
 ---
 
-**Status**: Specified & repo initialized. Ready for implementation.
+**Status**: MVP prototype runnable. Beads in `BEADS.md` / `bd list`. Screenshots in `docs/screenshots/`.
 
 MIT License. Built in the pragmatic, local-first style of related projects.

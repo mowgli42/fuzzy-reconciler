@@ -1,0 +1,131 @@
+{
+  "nodes": [
+    {
+      "key": "epic",
+      "title": "Fuzzy Reconciler MVP prototype (demo + screenshots)",
+      "type": "epic",
+      "priority": 1,
+      "description": "Vertical-slice MVP from OpenSpec + README handoff: engine, demo data, FastAPI, Svelte UI (ingest/config/results/map/detail/export), screenshots. Source: openspec/specs/fuzzy-reconciler/spec.md and README Development Handoff Plan.",
+      "labels": ["mvp", "prototype"]
+    },
+    {
+      "key": "scaffold",
+      "title": "Project scaffolding (src layout, Makefile, packaging)",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "acceptance": "src/fuzzy_reconciler package installs; make targets documented; hatchling build works",
+      "labels": ["infra"]
+    },
+    {
+      "key": "models",
+      "title": "Pydantic models: Entity, MatchConfig, MatchPair, CompareResult",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["scaffold"],
+      "acceptance": "models cover core schema + config weights/thresholds + classification enum",
+      "labels": ["backend"]
+    },
+    {
+      "key": "engine",
+      "title": "Matching engine: blocking, scoring, classification",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["models"],
+      "acceptance": "haversine geo + rapidfuzz name + attr Jaccard + temporal decay; rules for exact/strong/temporal_variant/spatial_proximity_candidate/weak/unmatched; unit tests for temporal + spatial scenarios",
+      "labels": ["backend", "core"]
+    },
+    {
+      "key": "fixtures",
+      "title": "Sample data generator + small_demo fixtures + ground truth",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["models"],
+      "acceptance": "fixtures/small_demo.json with intentional exact, temporal_variant (5-8), spatial_proximity (4-6), uniques; scripts/generate_sample_data.py; ground_truth.json for tests",
+      "labels": ["data"]
+    },
+    {
+      "key": "api",
+      "title": "FastAPI: /demo/sample, /ingest, /compare, /presets",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["engine", "fixtures"],
+      "acceptance": "OpenAPI docs live; demo returns both lists; compare returns summary + matches with score breakdowns; presets include POI Strict / Facility Loose / Sensor Temporal",
+      "labels": ["backend", "api"]
+    },
+    {
+      "key": "ui-shell",
+      "title": "Svelte 5 + Vite frontend shell + design tokens",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["api"],
+      "acceptance": "frontend/ builds; proxies API; brand-forward ops reconcilation aesthetic (not purple/cream AI defaults)",
+      "labels": ["frontend"]
+    },
+    {
+      "key": "ui-ingest",
+      "title": "Ingestion screen + Load Demo Data",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["ui-shell"],
+      "acceptance": "Load Demo Data populates List A/B previews; Continue to Configuration works",
+      "labels": ["frontend", "ui"]
+    },
+    {
+      "key": "ui-config",
+      "title": "Configuration panel + presets + Run Comparison",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["ui-ingest"],
+      "acceptance": "Sliders for geo/name/attr/date/weights; preset chips; Run Fuzzy Comparison calls /compare",
+      "labels": ["frontend", "ui"]
+    },
+    {
+      "key": "ui-results",
+      "title": "Results dashboard: KPIs + table + Leaflet map sync",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["ui-config"],
+      "acceptance": "Color-coded KPI cards; filterable table; map layers by classification; row/marker sync; polylines for pairs",
+      "labels": ["frontend", "ui"]
+    },
+    {
+      "key": "ui-detail",
+      "title": "Detail reconciliation panel + decisions + master export",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["ui-results"],
+      "acceptance": "Side-by-side fields, score bars, Confirm/Temporal/Distinct actions, notes; reconciled master + CSV export with _match_* columns",
+      "labels": ["frontend", "ui"]
+    },
+    {
+      "key": "screenshots",
+      "title": "Capture docs/screenshots for demo handoff",
+      "type": "task",
+      "priority": 1,
+      "parent": "epic",
+      "depends_on": ["ui-detail"],
+      "acceptance": "docs/screenshots/ has ingestion, config, results+map, detail temporal, detail spatial, master/export; README references images",
+      "labels": ["docs", "demo"]
+    },
+    {
+      "key": "devex",
+      "title": "Makefile + README quickstart polish for one-command demo",
+      "type": "task",
+      "priority": 2,
+      "parent": "epic",
+      "depends_on": ["api", "ui-shell"],
+      "acceptance": "make dev starts backend+frontend; README quick start works end-to-end in <30s with demo data",
+      "labels": ["infra"]
+    }
+  ]
+}
