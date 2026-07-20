@@ -31,7 +31,7 @@ build-backend = "hatchling.build"
 packages = ["src/fuzzy_reconciler"]
 
 [tool.vercel]
-entrypoint = "api/index.py"
+entrypoint = "api.index:app"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
