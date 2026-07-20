@@ -1,0 +1,166 @@
+{
+  "pairs": [
+    {
+      "a": "A-EX-0",
+      "b": "B-EX-0",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-1",
+      "b": "B-EX-1",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-2",
+      "b": "B-EX-2",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-3",
+      "b": "B-EX-3",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-4",
+      "b": "B-EX-4",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-5",
+      "b": "B-EX-5",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-6",
+      "b": "B-EX-6",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-7",
+      "b": "B-EX-7",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-8",
+      "b": "B-EX-8",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-9",
+      "b": "B-EX-9",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-10",
+      "b": "B-EX-10",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-11",
+      "b": "B-EX-11",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-12",
+      "b": "B-EX-12",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-13",
+      "b": "B-EX-13",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-14",
+      "b": "B-EX-14",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-15",
+      "b": "B-EX-15",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-16",
+      "b": "B-EX-16",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-EX-17",
+      "b": "B-EX-17",
+      "expected": "exact_match"
+    },
+    {
+      "a": "A-TV-0",
+      "b": "B-TV-0",
+      "expected": "temporal_variant",
+      "date_diff_days": 5
+    },
+    {
+      "a": "A-TV-1",
+      "b": "B-TV-1",
+      "expected": "temporal_variant",
+      "date_diff_days": 8
+    },
+    {
+      "a": "A-TV-2",
+      "b": "B-TV-2",
+      "expected": "temporal_variant",
+      "date_diff_days": 11
+    },
+    {
+      "a": "A-TV-3",
+      "b": "B-TV-3",
+      "expected": "temporal_variant",
+      "date_diff_days": 14
+    },
+    {
+      "a": "A-TV-4",
+      "b": "B-TV-4",
+      "expected": "temporal_variant",
+      "date_diff_days": 17
+    },
+    {
+      "a": "A-TV-5",
+      "b": "B-TV-5",
+      "expected": "temporal_variant",
+      "date_diff_days": 20
+    },
+    {
+      "a": "A-TV-6",
+      "b": "B-TV-6",
+      "expected": "temporal_variant",
+      "date_diff_days": 23
+    },
+    {
+      "a": "A-SP-0",
+      "b": "B-SP-0",
+      "expected": "spatial_proximity_candidate",
+      "approx_geo_m": 180
+    },
+    {
+      "a": "A-SP-1",
+      "b": "B-SP-1",
+      "expected": "spatial_proximity_candidate",
+      "approx_geo_m": 220
+    },
+    {
+      "a": "A-SP-2",
+      "b": "B-SP-2",
+      "expected": "spatial_proximity_candidate",
+      "approx_geo_m": 140
+    },
+    {
+      "a": "A-SP-3",
+      "b": "B-SP-3",
+      "expected": "spatial_proximity_candidate",
+      "approx_geo_m": 300
+    },
+    {
+      "a": "A-SP-4",
+      "b": "B-SP-4",
+      "expected": "spatial_proximity_candidate",
+      "approx_geo_m": 260
+    }
+  ]
+}

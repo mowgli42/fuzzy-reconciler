@@ -1,0 +1,135 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+:root {
+  --ink: #0b1f2a;
+  --ink-soft: #163442;
+  --paper: #e8f1f2;
+  --paper-dim: #c5d5d8;
+  --panel: #102833;
+  --panel-2: #143443;
+  --line: #2a4a57;
+  --teal: #2ec4b6;
+  --teal-dim: #1a8f85;
+  --amber: #f4a261;
+  --orange: #e76f51;
+  --green: #2a9d8f;
+  --gray: #7a93a0;
+  --danger: #c44536;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--paper);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(46, 196, 182, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(244, 162, 97, 0.10), transparent 50%),
+    linear-gradient(165deg, #07151c 0%, #0b1f2a 45%, #0e2833 100%);
+  background-attachment: fixed;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge-exact_match,
+.badge-strong_fuzzy_match,
+.badge-confirmed_match {
+  background: rgba(42, 157, 143, 0.2);
+  color: #7ddecf;
+  border: 1px solid rgba(42, 157, 143, 0.45);
+}
+
+.badge-temporal_variant,
+.badge-confirmed_temporal {
+  background: rgba(231, 111, 81, 0.18);
+  color: #f4a58a;
+  border: 1px solid rgba(231, 111, 81, 0.45);
+}
+
+.badge-spatial_proximity_candidate {
+  background: rgba(244, 162, 97, 0.18);
+  color: #f6c08a;
+  border: 1px solid rgba(244, 162, 97, 0.5);
+}
+
+.badge-weak_candidate,
+.badge-ambiguous {
+  background: rgba(122, 147, 160, 0.2);
+  color: #b7c8d0;
+  border: 1px solid rgba(122, 147, 160, 0.4);
+}
+
+.badge-unmatched,
+.badge-marked_distinct {
+  background: rgba(196, 69, 54, 0.15);
+  color: #e8a39b;
+  border: 1px solid rgba(196, 69, 54, 0.35);
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: #0a1a22;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 196, 182, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(46, 196, 182, 0);
+  }
+}
+
+.rise {
+  animation: rise-in 0.45s ease-out both;
+}
+
+.pulse-cta {
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}
