@@ -1,35 +1,18 @@
-# Task Beads — Fuzzy Reconciler MVP
+# Task Beads — Fuzzy Reconciler
 
-Granular completable units from the OpenSpec + README Development Handoff Plan.
-Source plan: `.beads/fuzzy-reconciler-mvp-plan.json`.
+See `.beads/` / `bd list` for the issue database.
 
-## Epic
+## Shipped on main
 
-**fr-laz** — Fuzzy Reconciler MVP prototype (demo + screenshots)  
-Status: Done (2026-07-20)  
-Goal met: Load Demo → Configure → Compare → Map/Table → Reconcile → Export + screenshots.
+MVP operator flow: **Ingest → Configure → Results → Merge**, with multi-format ingest verification, disposition commit, decline ledger, category inventory, publish/export, and API robustness tests.
 
-## Prototype String
+## Docs hygiene
 
-| ID | Bead | Status | Notes |
-|----|------|--------|-------|
-| fr-1gb | Project scaffolding | Done | src layout, Makefile, venv, hatchling |
-| fr-dpk | Pydantic models | Done | `models.py` |
-| fr-h32 | Matching engine | Done | blocking + scoring + classification; tests |
-| fr-9ak | Sample fixtures | Done | `fixtures/small_demo.json` + generator |
-| fr-coz | FastAPI surface | Done | `/demo/sample`, `/ingest`, `/compare`, `/presets` |
-| fr-04j | Svelte UI shell | Done | Vite + Tailwind + design tokens |
-| fr-vbn | Ingestion + demo load | Done | Load Demo Data |
-| fr-q17 | Config + Run | Done | presets + sliders |
-| fr-zgq | Results + map | Done | KPIs, table, Leaflet sync |
-| fr-6b2 | Detail + export | Done | decisions + master CSV/JSON |
-| fr-f3i | DevEx polish | Done | Makefile + README quickstart |
-| fr-61v | Screenshots | Done | `docs/screenshots/01–07` |
-
-## Commands
+Screenshots in `docs/screenshots/` must match the current UI. After UI landings, refresh with:
 
 ```bash
-bd list
-bd ready
-bd show fr-laz
+# API :8010 and Vite :5173 running
+cd frontend && node ../scripts/capture-screenshots.mjs
 ```
+
+Update README status table when capabilities change.
