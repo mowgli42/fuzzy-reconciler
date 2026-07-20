@@ -1,4 +1,4 @@
-.PHONY: install fixtures test backend frontend demo
+.PHONY: install fixtures import-samples test backend frontend demo
 
 install:
 	python3 -m venv .venv
@@ -8,7 +8,10 @@ install:
 fixtures:
 	.venv/bin/python scripts/generate_sample_data.py
 
-test:
+import-samples:
+	.venv/bin/python scripts/generate_import_samples.py
+
+test: import-samples
 	PYTHONPATH=src .venv/bin/pytest -q
 
 backend:
