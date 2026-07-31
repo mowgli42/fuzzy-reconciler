@@ -68,6 +68,8 @@ def main() -> None:
                 str(args.seed + 57),
                 "--fraction",
                 "0.85",
+                "--geo-mode",
+                "mixed",
             ]
         )
 

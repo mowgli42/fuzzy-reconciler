@@ -69,14 +69,39 @@ Russia/China include denser city + airport anchors (Sheremetyevo, Pulkovo, Capit
 
 ---
 
-## 2. Delta tool
+## 2. Delta tool — jitter vs relocation
+
+Two geo randomization styles (and a mix):
+
+| `--geo-mode` | Behavior |
+|--------------|----------|
+| `jitter` | Tolerance-scale offsets only (meters → ~250 m). Surfaces `spatial_proximity_candidate`. |
+| `relocation` | Unknown move / stale location (~80–150 km by default). Same entity cues, outside match radius → `relocated`. |
+| `mixed` (default) | **Both**: nearby jitter *and* long-haul moves. |
 
 ```bash
-python scripts/generate_delta.py \
-  --base fixtures/regions/examples/russia_base.json \
-  --out fixtures/regions/examples/russia_delta.json \
-  --also-write-pair fixtures/regions/examples/russia_pair.json
+# Nearby GPS / survey noise only
+python scripts/generate_delta.py --base …/iran_base.json --out …/iran_delta_jitter.json \
+  --geo-mode jitter --also-write-pair …/iran_pair_jitter.json
+
+# Literally moved ~100 km (stale recorded location)
+python scripts/generate_delta.py --base …/iran_base.json --out …/iran_delta_reloc.json \
+  --geo-mode relocation --relocate-min-m 80000 --relocate-max-m 150000
+
+# Both (recommended for demos)
+python scripts/generate_delta.py --base …/russia_base.json --out …/russia_delta.json \
+  --geo-mode mixed --also-write-pair …/russia_pair.json
 ```
+
+| Bucket | Geo change | Expected label |
+|--------|------------|----------------|
+| Exact / near-exact | tiny jitter (~12 m) | `exact_match` |
+| Temporal | tolerance jitter + date shift | `temporal_variant` |
+| Spatial proximity | 80–250 m jitter + strong name drift | `spatial_proximity_candidate` |
+| Relocated / stale | ~80–150 km move, mild name/attr keep | `relocated` |
+| Weak / unique | larger jitter or far noise | `weak_or_unmatched` |
+
+Ground-truth rows include `geo_change`: `tolerance_jitter` | `relocation` | `tiny_jitter`.
 
 ---
 
