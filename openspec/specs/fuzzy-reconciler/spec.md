@@ -168,13 +168,66 @@ The complete service SHALL run comfortably on modest developer hardware and depl
 - **WHEN** follows quickstart in README (one command to start, open browser)
 - **THEN** UI loads instantly, demo data works end-to-end in < 30 seconds total, and they can immediately begin customizing thresholds or adding a new preset via config
 
+### Requirement: Synthetic Regional Test Data Generation
+
+The repository SHALL provide standalone scripts that generate scalable synthetic entity lists (10–thousands) for unit, integration, and performance testing of ingest + fuzzy matching.
+
+**Regional generator** (`scripts/generate_regional_locations.py`):
+- SHALL produce entities clustered on land around documented key locations in hot-spot regions: `gulf` (Iraq/Kuwait Gulf War area), `iran`, `venezuela`, `cuba`, `russia` (selected western/northern focus), `china` (sample coastal + interior).
+- Categories SHALL include representative military/ISR-style types for reconcilation testing, e.g.:
+  - `surveillance_radar`
+  - `early_warning_radar`
+  - `sam_site`
+  - `ballistic_missile_site`
+  - `coastal_defense`
+  - `command_post`
+  - `airbase_support`
+  - `elint_site`
+- Each region SHALL expose a set of **key location anchors** (name + lat/lon) used as cluster centers. Example anchors (approximate public geography, synthetic use only):
+  - **gulf**: Baghdad corridor (33.31, 44.37), Basra (30.51, 47.78), Mosul (36.34, 43.13), Kuwait northern (29.50, 47.70), Nasiriyah (31.05, 46.26)
+  - **iran**: Tehran (35.69, 51.39), Isfahan (32.65, 51.68), Bushehr (28.97, 50.84), Bandar Abbas (27.18, 56.27), Tabriz (38.08, 46.29), Kermanshah (34.31, 47.06)
+  - **venezuela**: Caracas (10.48, -66.90), Maracaibo (10.67, -71.61), Puerto La Cruz (10.22, -64.63), Barquisimeto (10.07, -69.32), Ciudad Bolivar (8.12, -63.55)
+  - **cuba**: Havana (23.11, -82.37), Santiago (20.02, -75.83), Guantanamo area (20.14, -75.21), Camaguey (21.38, -77.92), Holguin (20.89, -76.26)
+  - **russia**: Moscow (55.75, 37.62), Kaliningrad (54.71, 20.51), Sevastopol/Crimea (44.62, 33.52), Murmansk (68.97, 33.09), St Petersburg (59.93, 30.33), Rostov (47.24, 39.70)
+  - **china**: Beijing (39.90, 116.40), Shanghai (31.23, 121.47), Hainan (19.20, 109.50), Fujian coast (25.00, 118.50), Guangzhou (23.13, 113.26), Xi'an (34.26, 108.95)
+- Output SHALL be JSON with `meta` (region, anchors, seed, counts, categories) and `entities` list matching the core Entity schema (id, name, lat, lon, analyzed_at, category, attributes).
+- Generation SHALL be deterministic given `--seed` and pure-stdlib (no external landmask required; offsets + region bbox clamping keep points near land clusters).
+
+**Delta tool** (`scripts/generate_delta.py`):
+- SHALL accept a base regional fixture and produce an updated List B with controlled variations:
+  - exact / near-exact (small geo jitter)
+  - temporal_variant (date shift within tolerance + mild name/attr drift)
+  - spatial_proximity_candidate (geo separation ~80–320 m, name drift, high attr overlap)
+  - weak / unique noise
+- SHALL emit optional `ground_truth` pair expectations for automated unit tests.
+- SHALL support writing a combined `list_a` / `list_b` pair fixture for direct compare tests.
+
+**Testing / checkout integration:**
+- Larger regional fixtures (hundreds–thousands of entities) SHALL be usable in unit and API robustness tests.
+- Generation scripts SHOULD be invokable from Makefile / CI so fixtures can be regenerated on checkout or in a `make fixtures-regions` target without committing multi-MB artifacts by default (or commit a small canonical set and generate larger on demand).
+
+#### Scenario: Generate Iran base + delta for classification unit tests
+
+- **GIVEN** `python scripts/generate_regional_locations.py --region iran --count 200 --out fixtures/regions/iran_base.json`
+- **AND** `python scripts/generate_delta.py --base fixtures/regions/iran_base.json --out fixtures/regions/iran_delta.json --also-write-pair fixtures/regions/iran_pair.json`
+- **WHEN** the pair fixture is loaded into the matching engine with a facility-loose-style config (max_geo ~350 m, date_tolerance 30 days)
+- **THEN** results SHALL include temporal_variant and spatial_proximity_candidate pairs consistent with the delta ground_truth labels
+- **AND** ingest of the regional JSON SHALL succeed with geo_valid count equal to entity count
+
+#### Scenario: Scale to multi-region load fixture
+
+- **GIVEN** `python scripts/generate_regional_locations.py --region all --count 500 --out fixtures/regions/`
+- **WHEN** any single region file is compared against its delta counterpart
+- **THEN** comparison SHALL complete within the performance envelope defined for moderate lists
+- **AND** meta.anchors and meta.categories SHALL be present for documentation and test assertions
+
 ## Non-Functional & Cross-Cutting
 
 - **Auditability**: Every classification decision (automated or manual) carries full score vector, thresholds used, and (for manual) actor + rationale + timestamp. Exportable.
 - **Determinism**: Same inputs + same config = identical classifications and scores (modulo floating point).
 - **Extensibility hooks**: Clear extension points documented for custom scorers, new classification rules, additional export formats, or integration with external ID resolution services.
 - **Accessibility & UX**: WCAG-friendly contrast, keyboard operable table/map where practical, clear loading/empty/error states, helpful inline docs/tooltips for every parameter.
-- **Testing strategy alignment**: OpenSpec scenarios map directly to Gherkin features; engine has property-based or example-driven unit tests; UI flows covered by E2E (Playwright recommended).
+- **Testing strategy alignment**: OpenSpec scenarios map directly to Gherkin features; engine has property-based or example-driven unit tests; UI flows covered by E2E (Playwright recommended). Regional generators + delta tool feed large-scale unit/API tests.
 
 ## Implementation Guidance for Cursor / OpenSpec Workflow
 
@@ -186,7 +239,7 @@ Use this spec as the source of truth. Create Beads issues from each Requirement 
 - Frontend: Svelte 5 + Vite + Tailwind + shadcn-svelte or daisyUI + Leaflet.js (lightweight) or svelte-map components
 - State management: Svelte stores + URL params for shareable config; optional backend sessions
 - Container: Multi-stage Dockerfile, docker-compose.yml with healthchecks; deployable via Kamal
-- Dev UX: Makefile targets (dev, test, demo), hot reload for both frontend and backend
+- Dev UX: Makefile targets (dev, test, demo, fixtures-regions), hot reload for both frontend and backend
 - Validation: `npx @fission-ai/openspec validate` once integrated; pytest + Gherkin BDD tests mirroring scenarios
 
 MVP scope suggestion: Get upload → map → run → results table + basic Leaflet markers (color by classification) + one export working first. Then layer on config, scoring, actions, exports.
@@ -195,6 +248,6 @@ This spec is intentionally self-contained so a new repository can be initialized
 
 ---
 
-**Status**: specified (ready for Beads breakdown and implementation)
+**Status**: specified (ready for Beads breakdown and implementation); regional synthetic data tooling specified and scripts landed on `main`.
 
 **Related capabilities**: Could later integrate with orientation-layer style sensemaking for large ambiguous result sets, or human-in-the-loop confirmation queues.
