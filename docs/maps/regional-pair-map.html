@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regional pair — Iran</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --ink: #1a2a32;
+      --paper: #f4f0e8;
+      --muted: #5c6b73;
+      --line: #c9d2d6;
+      --blue: #2a6f97;
+      --red: #c44536;
+      --anchor: #b08968;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    header {
+      padding: 1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.25rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      max-width: 70ch;
+      line-height: 1.45;
+    }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      margin-top: 0.75rem;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 0.65rem;
+      font-size: 0.85rem;
+    }
+    .swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1.5px solid #fff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+    }
+    .dot.a { background: var(--blue); }
+    .dot.b { background: var(--red); }
+    .dot.anchor { background: var(--anchor); border-radius: 2px; }
+    #map {
+      height: calc(100vh - 150px);
+      min-height: 480px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="title">Regional pair map</h1>
+    <p>
+      Synthetic hot-spot fixtures from the regional location generator (List A) and
+      the delta tool (List B). Blue = base file, red = updated file. Used for fuzzy
+      matching unit tests — not real site data.
+    </p>
+    <div class="legend">
+      <span class="swatch"><span class="dot a"></span> List A (base)</span>
+      <span class="swatch"><span class="dot b"></span> List B (delta)</span>
+      <span class="swatch"><span class="dot anchor"></span> Region anchors</span>
+    </div>
+    <div class="meta" id="meta"></div>
+  </header>
+  <div id="map"></div>
+  <script id="data" type="application/json">{
+  "title": "Regional pair \u2014 Iran",
+  "source": "fixtures/regions/canonical/iran_pair.json",
+  "region": "iran",
+  "count_a": 40,
+  "count_b": 39,
+  "anchors": [
+    {
+      "name": "Tehran area",
+      "lat": 35.69,
+      "lon": 51.39
+    },
+    {
+      "name": "Isfahan area",
+      "lat": 32.65,
+      "lon": 51.68
+    },
+    {
+      "name": "Bushehr coastal",
+      "lat": 28.97,
+      "lon": 50.84
+    },
+    {
+      "name": "Bandar Abbas",
+      "lat": 27.18,
+      "lon": 56.27
+    },
+    {
+      "name": "Tabriz area",
+      "lat": 38.08,
+      "lon": 46.29
+    },
+    {
+      "name": "Kermanshah area",
+      "lat": 34.31,
+      "lon": 47.06
+    }
+  ],
+  "list_a": [
+    {
+      "id": "IRA-00001",
+      "name": "Area Radar IRA-0001",
+      "lat": 35.536392,
+      "lon": 51.300422,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "IRA-00002",
+      "name": "Isfahan Long-Range EW 2",
+      "lat": 32.682992,
+      "lon": 51.703523,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "IRA-00003",
+      "name": "SAM Battery IRA-0003",
+      "lat": 28.858585,
+      "lon": 51.009006,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00004",
+      "name": "Strategic Pad IRA-0004",
+      "lat": 27.333002,
+      "lon": 56.225843,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "IRA-00005",
+      "name": "Coastal Defense IRA-0005",
+      "lat": 38.168308,
+      "lon": 46.489348,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "IRA-00006",
+      "name": "Kermanshah AD Battery 6",
+      "lat": 34.375267,
+      "lon": 47.131862,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00007",
+      "name": "Tehran Runway Support 7",
+      "lat": 35.77677,
+      "lon": 51.213186,
+      "category": "airbase_support"
+    },
+    {
+      "id": "IRA-00008",
+      "name": "SAM Battery IRA-0008",
+      "lat": 32.774403,
+      "lon": 51.734867,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00009",
+      "name": "EW Radar IRA-0009",
+      "lat": 28.983692,
+      "lon": 50.16792,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "IRA-00010",
+      "name": "Long-Range EW IRA-0010",
+      "lat": 27.332343,
+      "lon": 56.401156,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "IRA-00011",
+      "name": "AD Battery IRA-0011",
+      "lat": 38.151043,
+      "lon": 46.48387,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00012",
+      "name": "BM Site IRA-0012",
+      "lat": 34.366599,
+      "lon": 47.54483,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "IRA-00013",
+      "name": "Coastal Defense IRA-0013",
+      "lat": 35.711783,
+      "lon": 51.222272,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "IRA-00014",
+      "name": "Command Post IRA-0014",
+      "lat": 32.574021,
+      "lon": 51.823046,
+      "category": "command_post"
+    },
+    {
+      "id": "IRA-00015",
+      "name": "Air Support Site IRA-0015",
+      "lat": 28.929065,
+      "lon": 50.987715,
+      "category": "airbase_support"
+    },
+    {
+      "id": "IRA-00016",
+      "name": "Bandar EW Radar 16",
+      "lat": 27.020629,
+      "lon": 56.345557,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "IRA-00017",
+      "name": "Coastal Watch IRA-0017",
+      "lat": 38.18211,
+      "lon": 46.240099,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "IRA-00018",
+      "name": "Base Support IRA-0018",
+      "lat": 34.366065,
+      "lon": 47.249558,
+      "category": "airbase_support"
+    },
+    {
+      "id": "IRA-00019",
+      "name": "SAM Battery IRA-0019",
+      "lat": 35.587643,
+      "lon": 51.375119,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00020",
+      "name": "Isfahan Missile Complex 20",
+      "lat": 32.518464,
+      "lon": 51.777391,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "IRA-00021",
+      "name": "Shore Battery IRA-0021",
+      "lat": 28.632527,
+      "lon": 51.306689,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "IRA-00022",
+      "name": "Bandar Command Post 22",
+      "lat": 27.088707,
+      "lon": 56.109493,
+      "category": "command_post"
+    },
+    {
+      "id": "IRA-00023",
+      "name": "Air Support Site IRA-0023",
+      "lat": 37.936698,
+      "lon": 46.293216,
+      "category": "airbase_support"
+    },
+    {
+      "id": "IRA-00024",
+      "name": "C2 Node IRA-0024",
+      "lat": 34.335522,
+      "lon": 46.879802,
+      "category": "command_post"
+    },
+    {
+      "id": "IRA-00025",
+      "name": "Surveillance Radar IRA-0025",
+      "lat": 35.625321,
+      "lon": 51.316806,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "IRA-00026",
+      "name": "Early Warning Node IRA-0026",
+      "lat": 32.601171,
+      "lon": 51.51438,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "IRA-00027",
+      "name": "SAM Battery IRA-0027",
+      "lat": 28.681648,
+      "lon": 51.108425,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00028",
+      "name": "Missile Complex IRA-0028",
+      "lat": 27.240635,
+      "lon": 56.398296,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "IRA-00029",
+      "name": "Coastal Defense IRA-0029",
+      "lat": 38.026174,
+      "lon": 46.138326,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "IRA-00030",
+      "name": "Ops Center IRA-0030",
+      "lat": 34.584552,
+      "lon": 46.44933,
+      "category": "command_post"
+    },
+    {
+      "id": "IRA-00031",
+      "name": "Air Support Site IRA-0031",
+      "lat": 36.208437,
+      "lon": 52.095964,
+      "category": "airbase_support"
+    },
+    {
+      "id": "IRA-00032",
+      "name": "Isfahan ELINT Node 32",
+      "lat": 32.271613,
+      "lon": 51.103877,
+      "category": "elint_site"
+    },
+    {
+      "id": "IRA-00033",
+      "name": "Coastal Watch IRA-0033",
+      "lat": 29.062935,
+      "lon": 50.695135,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "IRA-00034",
+      "name": "Shore Battery IRA-0034",
+      "lat": 27.147165,
+      "lon": 56.189514,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "IRA-00035",
+      "name": "Tabriz SAM Battery 35",
+      "lat": 37.618006,
+      "lon": 47.134565,
+      "category": "sam_site"
+    },
+    {
+      "id": "IRA-00036",
+      "name": "Strategic Pad IRA-0036",
+      "lat": 33.864551,
+      "lon": 46.267201,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "IRA-00037",
+      "name": "Coast Node IRA-0037",
+      "lat": 35.635088,
+      "lon": 51.315906,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "IRA-00038",
+      "name": "Ops Center IRA-0038",
+      "lat": 32.550344,
+      "lon": 51.743347,
+      "category": "command_post"
+    },
+    {
+      "id": "IRA-00039",
+      "name": "Runway Support IRA-0039",
+      "lat": 28.876275,
+      "lon": 50.945629,
+      "category": "airbase_support"
+    },
+    {
+      "id": "IRA-00040",
+      "name": "Bandar Collection Post 40",
+      "lat": 27.519147,
+      "lon": 56.526657,
+      "category": "elint_site"
+    }
+  ],
+  "list_b": [
+    {
+      "id": "B-IRA-00040",
+      "name": "Bandar Collection Post 40",
+      "lat": 27.519048,
+      "lon": 56.526671,
+      "category": "elint_site"
+    },
+    {
+      "id": "B-IRA-00010",
+      "name": "Long-Range EW IRA-0010",
+      "lat": 27.332449,
+      "lon": 56.401164,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "B-IRA-00036",
+      "name": "Strategic Pad IRA-0036",
+      "lat": 33.864486,
+      "lon": 46.267191,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "B-IRA-00027",
+      "name": "SAM Battery IRA-0027",
+      "lat": 28.681587,
+      "lon": 51.108528,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00001",
+      "name": "Area Radar IRA-0001",
+      "lat": 35.536379,
+      "lon": 51.300535,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "B-IRA-00005",
+      "name": "Coastal Defense IRA-0005",
+      "lat": 38.168343,
+      "lon": 46.489221,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-IRA-00034",
+      "name": "Shore Battery IRA-0034",
+      "lat": 27.147205,
+      "lon": 56.189494,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-IRA-00002",
+      "name": "Isfahan Long-Range EW 2",
+      "lat": 32.682915,
+      "lon": 51.703553,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "B-IRA-00033",
+      "name": "Coastal Watch IRA-0033",
+      "lat": 29.06294,
+      "lon": 50.695061,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "B-IRA-00029",
+      "name": "Coastal Defense IRA 0029",
+      "lat": 38.026285,
+      "lon": 46.13816,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-IRA-00008",
+      "name": "AD Battery IRA-0008",
+      "lat": 32.774489,
+      "lon": 51.7351,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00039",
+      "name": "Runway Support IRA-0039",
+      "lat": 28.876357,
+      "lon": 50.945503,
+      "category": "airbase_support"
+    },
+    {
+      "id": "B-IRA-00004",
+      "name": "Strategic Pad IRA-0004",
+      "lat": 27.333204,
+      "lon": 56.225682,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "B-IRA-00011",
+      "name": "AD Battery IRA 0011",
+      "lat": 38.151301,
+      "lon": 46.483871,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00021",
+      "name": "Shore Battery IRA-0021 B",
+      "lat": 28.63283,
+      "lon": 51.306627,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-IRA-00030",
+      "name": "Ops Center IRA-0030",
+      "lat": 34.584866,
+      "lon": 46.449507,
+      "category": "command_post"
+    },
+    {
+      "id": "B-IRA-00037",
+      "name": "Pad XR-016",
+      "lat": 35.63542,
+      "lon": 51.317938,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-IRA-00028",
+      "name": "Pad ZV-017",
+      "lat": 27.241226,
+      "lon": 56.400233,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "B-IRA-00019",
+      "name": "Site KQ-018",
+      "lat": 35.587874,
+      "lon": 51.377027,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00031",
+      "name": "Node KQ-019",
+      "lat": 36.209199,
+      "lon": 52.098406,
+      "category": "airbase_support"
+    },
+    {
+      "id": "B-IRA-00014",
+      "name": "Node KQ-020",
+      "lat": 32.574279,
+      "lon": 51.824664,
+      "category": "command_post"
+    },
+    {
+      "id": "B-IRA-00007",
+      "name": "Installation ZV-021",
+      "lat": 35.777164,
+      "lon": 51.214719,
+      "category": "airbase_support"
+    },
+    {
+      "id": "B-IRA-00035",
+      "name": "Installation KQ-022",
+      "lat": 37.61821,
+      "lon": 47.135539,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00020",
+      "name": "Isfahan Missile Complex 20 X23",
+      "lat": 32.52021,
+      "lon": 51.782341,
+      "category": "ballistic_missile_site"
+    },
+    {
+      "id": "B-IRA-00003",
+      "name": "AD Battery IRA-0003 X24",
+      "lat": 28.856438,
+      "lon": 51.008152,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00018",
+      "name": "Base Support IRA 0018 X25",
+      "lat": 34.364677,
+      "lon": 47.248469,
+      "category": "airbase_support"
+    },
+    {
+      "id": "B-IRA-00023",
+      "name": "Air Support Site IRA-0023 X26",
+      "lat": 37.94074,
+      "lon": 46.298664,
+      "category": "airbase_support"
+    },
+    {
+      "id": "B-IRA-00022",
+      "name": "Bandar Command Post 22 X27",
+      "lat": 27.091864,
+      "lon": 56.108654,
+      "category": "command_post"
+    },
+    {
+      "id": "B-IRA-00032",
+      "name": "Isfahan ELINT Node 32 X28",
+      "lat": 32.273994,
+      "lon": 51.106734,
+      "category": "elint_site"
+    },
+    {
+      "id": "B-IRA-00038",
+      "name": "Ops Center IRA 0038 X29",
+      "lat": 32.546531,
+      "lon": 51.738359,
+      "category": "command_post"
+    },
+    {
+      "id": "B-IRA-00024",
+      "name": "C2 Node IRA-0024 X30",
+      "lat": 34.339549,
+      "lon": 46.880759,
+      "category": "command_post"
+    },
+    {
+      "id": "B-IRA-00017",
+      "name": "Coastal Watch IRA 0017 X31",
+      "lat": 38.178518,
+      "lon": 46.244256,
+      "category": "surveillance_radar"
+    },
+    {
+      "id": "B-IRA-00006",
+      "name": "Kermanshah AD Battery 6 X32",
+      "lat": 34.371929,
+      "lon": 47.127842,
+      "category": "sam_site"
+    },
+    {
+      "id": "B-IRA-00009",
+      "name": "EW Radar IRA-0009 X33",
+      "lat": 28.982695,
+      "lon": 50.168555,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "B-IRA-00016",
+      "name": "Bandar EW Radar 16 X34",
+      "lat": 27.018385,
+      "lon": 56.343274,
+      "category": "early_warning_radar"
+    },
+    {
+      "id": "B-IRA-00015",
+      "name": "Air Support Site IRA-0015 X35",
+      "lat": 28.926223,
+      "lon": 50.991951,
+      "category": "airbase_support"
+    },
+    {
+      "id": "B-UQ-0001",
+      "name": "Unique Delta 1",
+      "lat": 38.282083,
+      "lon": 48.761681,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-UQ-0002",
+      "name": "Unique Delta 2",
+      "lat": 25.405925,
+      "lon": 55.502014,
+      "category": "coastal_defense"
+    },
+    {
+      "id": "B-UQ-0003",
+      "name": "Unique Delta 3",
+      "lat": 30.734222,
+      "lon": 51.763358,
+      "category": "elint_site"
+    }
+  ],
+  "ground_truth_pairs": 36
+}</script>
+  <script>
+    const data = JSON.parse(document.getElementById("data").textContent);
+    document.getElementById("title").textContent = data.title;
+    document.getElementById("meta").innerHTML = [
+      "<span>source: " + data.source + "</span>",
+      "<span>region: " + (data.region || "—") + "</span>",
+      "<span>A: " + data.count_a + "</span>",
+      "<span>B: " + data.count_b + "</span>",
+      "<span>ground_truth pairs: " + data.ground_truth_pairs + "</span>",
+    ].join("");
+
+    const map = L.map("map", { scrollWheelZoom: true });
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      attribution: "&copy; OpenStreetMap &copy; CARTO",
+      maxZoom: 18,
+    }).addTo(map);
+
+    const bounds = [];
+    const blueIcon = L.divIcon({
+      className: "",
+      html: '<div style="width:12px;height:12px;border-radius:50%;background:#2a6f97;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>',
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    });
+    const redIcon = L.divIcon({
+      className: "",
+      html: '<div style="width:12px;height:12px;border-radius:50%;background:#c44536;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>',
+      iconSize: [12, 12],
+      iconAnchor: [6, 6],
+    });
+    const anchorIcon = L.divIcon({
+      className: "",
+      html: '<div style="width:10px;height:10px;background:#b08968;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>',
+      iconSize: [10, 10],
+      iconAnchor: [5, 5],
+    });
+
+    for (const p of data.list_a) {
+      const m = L.marker([p.lat, p.lon], { icon: blueIcon }).addTo(map);
+      m.bindPopup("<strong>A · " + (p.id || "") + "</strong><br/>" + (p.name || "") + "<br/><code>" + (p.category || "") + "</code>");
+      bounds.push([p.lat, p.lon]);
+    }
+    for (const p of data.list_b) {
+      const m = L.marker([p.lat, p.lon], { icon: redIcon }).addTo(map);
+      m.bindPopup("<strong>B · " + (p.id || "") + "</strong><br/>" + (p.name || "") + "<br/><code>" + (p.category || "") + "</code>");
+      bounds.push([p.lat, p.lon]);
+    }
+    for (const a of data.anchors || []) {
+      if (a.lat == null || a.lon == null) continue;
+      L.marker([a.lat, a.lon], { icon: anchorIcon })
+        .addTo(map)
+        .bindPopup("<strong>Anchor</strong><br/>" + (a.name || ""));
+      bounds.push([a.lat, a.lon]);
+    }
+
+    if (bounds.length) {
+      map.fitBounds(bounds, { padding: [36, 36] });
+    } else {
+      map.setView([32.5, 53.5], 5);
+    }
+  </script>
+</body>
+</html>
