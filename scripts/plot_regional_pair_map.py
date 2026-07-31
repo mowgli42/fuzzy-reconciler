@@ -67,14 +67,16 @@ def build_html(data: dict, source: Path) -> str:
         "region": meta.get("region"),
         "count_a": len(points_a),
         "count_b": len(points_b),
+        "airports_a": sum(1 for p in points_a if p.get("category") in ("medium_airport", "large_airport")),
+        "airports_b": sum(1 for p in points_b if p.get("category") in ("medium_airport", "large_airport")),
         "anchors": anchors,
         "list_a": points_a,
         "list_b": points_b,
         "ground_truth_pairs": len(data.get("ground_truth") or []),
     }
 
-    # Embed JSON safely inside a script tag
-    blob = json.dumps(payload, indent=2)
+    # Compact JSON for large fixtures (thousands of points)
+    blob = json.dumps(payload, separators=(",", ":"))
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -152,7 +154,7 @@ def build_html(data: dict, source: Path) -> str:
     .dot.b {{ background: var(--red); }}
     .dot.anchor {{ background: var(--anchor); border-radius: 2px; }}
     #map {{
-      height: calc(100vh - 150px);
+      height: calc(100vh - 160px);
       min-height: 480px;
       width: 100%;
     }}
@@ -163,8 +165,8 @@ def build_html(data: dict, source: Path) -> str:
     <h1 id="title">Regional pair map</h1>
     <p>
       Synthetic hot-spot fixtures from the regional location generator (List A) and
-      the delta tool (List B). Blue = base file, red = updated file. Used for fuzzy
-      matching unit tests — not real site data.
+      the delta tool (List B). Blue = base file, red = updated file. Includes med/large
+      airports. Used for fuzzy matching demos — not real site data.
     </p>
     <div class="legend">
       <span class="swatch"><span class="dot a"></span> List A (base)</span>
@@ -181,52 +183,52 @@ def build_html(data: dict, source: Path) -> str:
     document.getElementById("meta").innerHTML = [
       "<span>source: " + data.source + "</span>",
       "<span>region: " + (data.region || "—") + "</span>",
-      "<span>A: " + data.count_a + "</span>",
-      "<span>B: " + data.count_b + "</span>",
+      "<span>A: " + data.count_a + " (airports " + (data.airports_a || 0) + ")</span>",
+      "<span>B: " + data.count_b + " (airports " + (data.airports_b || 0) + ")</span>",
       "<span>ground_truth pairs: " + data.ground_truth_pairs + "</span>",
     ].join("");
 
-    const map = L.map("map", {{ scrollWheelZoom: true }});
+    const map = L.map("map", {{ scrollWheelZoom: true, preferCanvas: true }});
     L.tileLayer("https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png", {{
       attribution: "&copy; OpenStreetMap &copy; CARTO",
       maxZoom: 18,
     }}).addTo(map);
 
     const bounds = [];
-    const blueIcon = L.divIcon({{
-      className: "",
-      html: '<div style="width:12px;height:12px;border-radius:50%;background:#2a6f97;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>',
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    }});
-    const redIcon = L.divIcon({{
-      className: "",
-      html: '<div style="width:12px;height:12px;border-radius:50%;background:#c44536;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>',
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
-    }});
-    const anchorIcon = L.divIcon({{
-      className: "",
-      html: '<div style="width:10px;height:10px;background:#b08968;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)"></div>',
-      iconSize: [10, 10],
-      iconAnchor: [5, 5],
-    }});
+    const canvas = L.canvas({{ padding: 0.5 }});
+    const total = data.count_a + data.count_b;
+    const radius = total > 1500 ? 2.5 : total > 500 ? 3.5 : 5;
 
-    for (const p of data.list_a) {{
-      const m = L.marker([p.lat, p.lon], {{ icon: blueIcon }}).addTo(map);
-      m.bindPopup("<strong>A · " + (p.id || "") + "</strong><br/>" + (p.name || "") + "<br/><code>" + (p.category || "") + "</code>");
+    function addCircle(p, color, label) {{
+      const m = L.circleMarker([p.lat, p.lon], {{
+        radius,
+        color: "#fff",
+        weight: 0.8,
+        fillColor: color,
+        fillOpacity: 0.85,
+        renderer: canvas,
+      }}).addTo(map);
+      m.bindPopup(
+        "<strong>" + label + " · " + (p.id || "") + "</strong><br/>" +
+        (p.name || "") + "<br/><code>" + (p.category || "") + "</code>"
+      );
       bounds.push([p.lat, p.lon]);
     }}
-    for (const p of data.list_b) {{
-      const m = L.marker([p.lat, p.lon], {{ icon: redIcon }}).addTo(map);
-      m.bindPopup("<strong>B · " + (p.id || "") + "</strong><br/>" + (p.name || "") + "<br/><code>" + (p.category || "") + "</code>");
-      bounds.push([p.lat, p.lon]);
-    }}
+
+    for (const p of data.list_a) addCircle(p, "#2a6f97", "A");
+    for (const p of data.list_b) addCircle(p, "#c44536", "B");
+
     for (const a of data.anchors || []) {{
       if (a.lat == null || a.lon == null) continue;
-      L.marker([a.lat, a.lon], {{ icon: anchorIcon }})
-        .addTo(map)
-        .bindPopup("<strong>Anchor</strong><br/>" + (a.name || ""));
+      const isAirport = /airport|intl/i.test(a.name || "");
+      L.circleMarker([a.lat, a.lon], {{
+        radius: isAirport ? 6 : 5,
+        color: "#fff",
+        weight: 1.2,
+        fillColor: "#b08968",
+        fillOpacity: 0.95,
+        renderer: canvas,
+      }}).addTo(map).bindPopup("<strong>Anchor</strong><br/>" + (a.name || ""));
       bounds.push([a.lat, a.lon]);
     }}
 
@@ -354,6 +356,38 @@ console.log('Wrote', out);
             capture.unlink(missing_ok=True)
 
 
+def render_one(
+    pair_path: Path,
+    *,
+    out_html: Path,
+    out_png: Path,
+    out_scatter: Path,
+    screenshot: bool,
+) -> None:
+    data = load_pair(pair_path)
+    html = build_html(data, pair_path)
+    out_html.parent.mkdir(parents=True, exist_ok=True)
+    out_html.write_text(html)
+    print(f"Wrote {out_html} (A={len(data['list_a'])} B={len(data['list_b'])})")
+
+    try:
+        write_static_png(data, out_scatter, pair_path)
+        print(f"Wrote {out_scatter}")
+    except ImportError:
+        print("matplotlib not installed; skip scatter PNG")
+
+    if screenshot:
+        ok = maybe_screenshot(out_html, out_png)
+        if ok:
+            print(f"Wrote {out_png}")
+        else:
+            try:
+                write_static_png(data, out_png, pair_path)
+                print(f"Basemap capture failed; wrote scatter fallback to {out_png}")
+            except ImportError:
+                print(f"No screenshot for {pair_path}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--pair", type=Path, default=DEFAULT_PAIR)
@@ -361,32 +395,42 @@ def main() -> None:
     p.add_argument("--out-png", type=Path, default=OUT_PNG, help="Leaflet basemap screenshot path")
     p.add_argument("--out-scatter", type=Path, default=OUT_SCATTER)
     p.add_argument(
+        "--examples-dir",
+        type=Path,
+        default=None,
+        help="Plot every *_pair.json under this directory into docs/maps/examples/",
+    )
+    p.add_argument(
         "--screenshot",
         action="store_true",
         help="Capture Leaflet basemap PNG via Playwright (primary doc image)",
     )
     args = p.parse_args()
 
-    data = load_pair(args.pair)
-    html = build_html(data, args.pair)
-    args.out_html.parent.mkdir(parents=True, exist_ok=True)
-    args.out_html.write_text(html)
-    print(f"Wrote {args.out_html} (A={len(data['list_a'])} B={len(data['list_b'])})")
+    if args.examples_dir:
+        pairs = sorted(args.examples_dir.glob("*_pair.json"))
+        if not pairs:
+            raise SystemExit(f"No *_pair.json under {args.examples_dir}")
+        maps_dir = ROOT / "docs" / "maps" / "examples"
+        shots_dir = ROOT / "docs" / "screenshots" / "examples"
+        for pair in pairs:
+            region = pair.name.replace("_pair.json", "")
+            render_one(
+                pair,
+                out_html=maps_dir / f"{region}-pair-map.html",
+                out_png=shots_dir / f"{region}-pair-map.png",
+                out_scatter=shots_dir / f"{region}-pair-scatter.png",
+                screenshot=args.screenshot,
+            )
+        return
 
-    write_static_png(data, args.out_scatter, args.pair)
-    print(f"Wrote {args.out_scatter}")
-
-    if args.screenshot:
-        ok = maybe_screenshot(args.out_html, args.out_png)
-        if ok:
-            print(f"Wrote {args.out_png}")
-        else:
-            # Fall back so docs still have a map image path
-            write_static_png(data, args.out_png, args.pair)
-            print(f"Basemap capture failed; wrote scatter fallback to {args.out_png}")
-    elif not args.out_png.exists():
-        write_static_png(data, args.out_png, args.pair)
-        print(f"Wrote {args.out_png} (scatter; re-run with --screenshot for basemap)")
+    render_one(
+        args.pair,
+        out_html=args.out_html,
+        out_png=args.out_png,
+        out_scatter=args.out_scatter,
+        screenshot=args.screenshot,
+    )
 
 
 if __name__ == "__main__":
