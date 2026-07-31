@@ -50,11 +50,33 @@
     "note": "Synthetic delta for fuzzy matching tests; not real operational data.",
     "delta_of": "fixtures/regions/canonical/iran_base.json",
     "fraction": 0.9,
-    "exact_frac": 0.25,
-    "temporal_frac": 0.2,
-    "spatial_frac": 0.2,
+    "exact_frac": 0.22,
+    "temporal_frac": 0.18,
+    "spatial_frac": 0.18,
+    "relocate_frac": 0.18,
+    "geo_mode": "mixed",
+    "jitter_m": [
+      80.0,
+      250.0
+    ],
+    "relocate_m": [
+      80000.0,
+      150000.0
+    ],
     "count_b": 39,
-    "ground_truth_pairs": 36
+    "ground_truth_pairs": 36,
+    "ground_truth_by_expected": {
+      "exact_match": 7,
+      "temporal_variant": 6,
+      "spatial_proximity_candidate": 6,
+      "relocated": 6,
+      "weak_or_unmatched": 11
+    },
+    "ground_truth_by_geo_change": {
+      "tiny_jitter": 7,
+      "tolerance_jitter": 18,
+      "relocation": 11
+    }
   },
   "entities": [
     {
@@ -70,7 +92,8 @@
         "height_m": 20.8,
         "band": "X-band",
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00040",
@@ -101,7 +124,8 @@
         "band": "C-band",
         "range_km": 41.3,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00010",
@@ -131,7 +155,8 @@
         "status": "maintenance",
         "height_m": 12.0,
         "operator": "Iran Ops",
-        "anchor": "Kermanshah area"
+        "anchor": "Kermanshah area",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00036",
@@ -160,7 +185,8 @@
         "height_m": 24.1,
         "range_km": 126.4,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00027",
@@ -191,7 +217,8 @@
         "band": "S-band",
         "range_km": 78.4,
         "operator": "Iran Ops",
-        "anchor": "Tehran area"
+        "anchor": "Tehran area",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00001",
@@ -221,7 +248,8 @@
         "status": "active",
         "height_m": 28.3,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Tabriz area",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00005",
@@ -249,7 +277,8 @@
         "status": "active",
         "height_m": 14.6,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "tiny_jitter"
       },
       "original_row": {
         "site_id": "IRA-00034",
@@ -268,18 +297,19 @@
     {
       "id": "B-IRA-00002",
       "name": "Isfahan Long-Range EW 2",
-      "lat": 32.682915,
-      "lon": 51.703553,
-      "analyzed_at": "2026-01-23T07:00:00Z",
+      "lat": 32.68319,
+      "lon": 51.703531,
+      "analyzed_at": "2026-01-29T09:00:00Z",
       "category": "early_warning_radar",
       "attributes": {
         "region": "iran",
         "status": "active",
-        "height_m": 51.3,
+        "height_m": 50.3,
         "band": "X-band",
         "range_km": 326.2,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Isfahan area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00002",
@@ -300,18 +330,19 @@
     {
       "id": "B-IRA-00033",
       "name": "Coastal Watch IRA-0033",
-      "lat": 29.06294,
-      "lon": 50.695061,
-      "analyzed_at": "2026-01-31T07:00:00Z",
+      "lat": 29.063418,
+      "lon": 50.695043,
+      "analyzed_at": "2026-02-08T11:00:00Z",
       "category": "surveillance_radar",
       "attributes": {
         "region": "iran",
         "status": "active",
-        "height_m": 54.8,
+        "height_m": 55.8,
         "band": "X-band",
         "range_km": 131.4,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00033",
@@ -331,17 +362,18 @@
     },
     {
       "id": "B-IRA-00029",
-      "name": "Coastal Defense IRA 0029",
-      "lat": 38.026285,
-      "lon": 46.13816,
-      "analyzed_at": "2026-02-24T01:00:00Z",
+      "name": "Coastal Defense IRA 0029-B",
+      "lat": 38.026195,
+      "lon": 46.138017,
+      "analyzed_at": "2026-02-21T00:00:00Z",
       "category": "coastal_defense",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 13.4,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Tabriz area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00029",
@@ -360,17 +392,18 @@
     {
       "id": "B-IRA-00008",
       "name": "AD Battery IRA-0008",
-      "lat": 32.774489,
-      "lon": 51.7351,
-      "analyzed_at": "2026-01-26T08:00:00Z",
+      "lat": 32.77446,
+      "lon": 51.734953,
+      "analyzed_at": "2026-01-28T01:00:00Z",
       "category": "sam_site",
       "attributes": {
         "region": "iran",
         "status": "degraded",
-        "height_m": 30.8,
+        "height_m": 31.8,
         "range_km": 129.9,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Isfahan area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00008",
@@ -390,16 +423,17 @@
     {
       "id": "B-IRA-00039",
       "name": "Runway Support IRA-0039",
-      "lat": 28.876357,
-      "lon": 50.945503,
-      "analyzed_at": "2026-02-20T22:00:00Z",
+      "lat": 28.876304,
+      "lon": 50.94596,
+      "analyzed_at": "2026-03-14T00:00:00Z",
       "category": "airbase_support",
       "attributes": {
         "region": "iran",
         "status": "maintenance",
         "height_m": 54.2,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00039",
@@ -417,17 +451,18 @@
     },
     {
       "id": "B-IRA-00004",
-      "name": "Strategic Pad IRA-0004",
-      "lat": 27.333204,
-      "lon": 56.225682,
-      "analyzed_at": "2026-02-19T10:00:00Z",
+      "name": "Strategic Pad IRA 0004",
+      "lat": 27.332622,
+      "lon": 56.22584,
+      "analyzed_at": "2026-01-31T06:00:00Z",
       "category": "ballistic_missile_site",
       "attributes": {
         "region": "iran",
         "status": "standby",
-        "height_m": 13.0,
+        "height_m": 11.0,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00004",
@@ -445,18 +480,19 @@
     },
     {
       "id": "B-IRA-00011",
-      "name": "AD Battery IRA 0011",
-      "lat": 38.151301,
-      "lon": 46.483871,
-      "analyzed_at": "2026-02-16T16:00:00Z",
+      "name": "Complex KQ-013",
+      "lat": 38.151514,
+      "lon": 46.482421,
+      "analyzed_at": "2026-02-12T16:00:00Z",
       "category": "sam_site",
       "attributes": {
         "region": "iran",
         "status": "degraded",
-        "height_m": 41.7,
+        "height_m": 42.7,
         "range_km": 102.7,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Tabriz area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00011",
@@ -475,17 +511,18 @@
     },
     {
       "id": "B-IRA-00021",
-      "name": "Shore Battery IRA-0021 B",
-      "lat": 28.63283,
-      "lon": 51.306627,
-      "analyzed_at": "2026-02-05T21:00:00Z",
+      "name": "Pad ZV-014",
+      "lat": 28.63317,
+      "lon": 51.308277,
+      "analyzed_at": "2026-01-24T15:00:00Z",
       "category": "coastal_defense",
       "attributes": {
         "region": "iran",
         "status": "standby",
-        "height_m": 36.7,
+        "height_m": 35.7,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00021",
@@ -503,17 +540,18 @@
     },
     {
       "id": "B-IRA-00030",
-      "name": "Ops Center IRA-0030",
-      "lat": 34.584866,
-      "lon": 46.449507,
-      "analyzed_at": "2026-03-24T06:00:00Z",
+      "name": "Node KQ-015",
+      "lat": 34.584787,
+      "lon": 46.451615,
+      "analyzed_at": "2026-03-04T03:00:00Z",
       "category": "command_post",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 59.2,
         "operator": "Iran Ops",
-        "anchor": "Kermanshah area"
+        "anchor": "Kermanshah area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00030",
@@ -531,17 +569,18 @@
     },
     {
       "id": "B-IRA-00037",
-      "name": "Pad XR-016",
-      "lat": 35.63542,
-      "lon": 51.317938,
-      "analyzed_at": "2026-02-08T02:00:00Z",
+      "name": "Node XR-016",
+      "lat": 35.634753,
+      "lon": 51.314905,
+      "analyzed_at": "2026-02-05T02:00:00Z",
       "category": "coastal_defense",
       "attributes": {
         "region": "iran",
         "status": "maintenance",
         "height_m": 47.7,
         "operator": "Iran Ops",
-        "anchor": "Tehran area"
+        "anchor": "Tehran area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00037",
@@ -559,17 +598,18 @@
     },
     {
       "id": "B-IRA-00028",
-      "name": "Pad ZV-017",
-      "lat": 27.241226,
-      "lon": 56.400233,
-      "analyzed_at": "2026-02-26T16:00:00Z",
+      "name": "Complex ZV-017",
+      "lat": 27.239428,
+      "lon": 56.398852,
+      "analyzed_at": "2026-02-23T16:00:00Z",
       "category": "ballistic_missile_site",
       "attributes": {
         "region": "iran",
         "status": "maintenance",
         "height_m": 55.3,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00028",
@@ -587,10 +627,10 @@
     },
     {
       "id": "B-IRA-00019",
-      "name": "Site KQ-018",
-      "lat": 35.587874,
-      "lon": 51.377027,
-      "analyzed_at": "2026-01-27T09:00:00Z",
+      "name": "Pad KQ-018",
+      "lat": 35.587558,
+      "lon": 51.377811,
+      "analyzed_at": "2026-01-29T09:00:00Z",
       "category": "sam_site",
       "attributes": {
         "region": "iran",
@@ -598,7 +638,8 @@
         "height_m": 45.2,
         "range_km": 261.6,
         "operator": "Iran Ops",
-        "anchor": "Tehran area"
+        "anchor": "Tehran area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00019",
@@ -617,17 +658,19 @@
     },
     {
       "id": "B-IRA-00031",
-      "name": "Node KQ-019",
-      "lat": 36.209199,
-      "lon": 52.098406,
-      "analyzed_at": "2026-01-28T23:00:00Z",
+      "name": "Air Support St IRA-0031",
+      "lat": 35.020545,
+      "lon": 51.783897,
+      "analyzed_at": "2026-02-17T05:00:00Z",
       "category": "airbase_support",
       "attributes": {
         "region": "iran",
         "status": "degraded",
         "height_m": 50.7,
         "operator": "Iran Ops",
-        "anchor": "Tehran area"
+        "anchor": "Tehran area",
+        "geo_change": "relocation",
+        "relocation_note": "stale_or_moved"
       },
       "original_row": {
         "site_id": "IRA-00031",
@@ -645,17 +688,19 @@
     },
     {
       "id": "B-IRA-00014",
-      "name": "Node KQ-020",
-      "lat": 32.574279,
-      "lon": 51.824664,
-      "analyzed_at": "2026-02-20T14:00:00Z",
+      "name": "Command Post IRA-0014",
+      "lat": 32.351795,
+      "lon": 53.104928,
+      "analyzed_at": "2026-04-08T00:00:00Z",
       "category": "command_post",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 30.7,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Isfahan area",
+        "geo_change": "relocation",
+        "relocation_note": "stale_or_moved"
       },
       "original_row": {
         "site_id": "IRA-00014",
@@ -673,17 +718,19 @@
     },
     {
       "id": "B-IRA-00007",
-      "name": "Installation ZV-021",
-      "lat": 35.777164,
-      "lon": 51.214719,
-      "analyzed_at": "2026-01-27T14:00:00Z",
+      "name": "Tehran Runway Support 7",
+      "lat": 36.504776,
+      "lon": 50.446606,
+      "analyzed_at": "2026-02-21T14:00:00Z",
       "category": "airbase_support",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 20.1,
         "operator": "Iran Ops",
-        "anchor": "Tehran area"
+        "anchor": "Tehran area",
+        "geo_change": "relocation",
+        "relocation_note": "stale_or_moved"
       },
       "original_row": {
         "site_id": "IRA-00007",
@@ -701,10 +748,10 @@
     },
     {
       "id": "B-IRA-00035",
-      "name": "Installation KQ-022",
-      "lat": 37.61821,
-      "lon": 47.135539,
-      "analyzed_at": "2026-02-08T23:00:00Z",
+      "name": "Tabriz SAM Battery 35",
+      "lat": 38.080386,
+      "lon": 48.702498,
+      "analyzed_at": "2026-03-30T09:00:00Z",
       "category": "sam_site",
       "attributes": {
         "region": "iran",
@@ -712,7 +759,9 @@
         "height_m": 64.1,
         "range_km": 87.4,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Tabriz area",
+        "geo_change": "relocation",
+        "relocation_note": "stale_or_moved"
       },
       "original_row": {
         "site_id": "IRA-00035",
@@ -731,17 +780,19 @@
     },
     {
       "id": "B-IRA-00020",
-      "name": "Isfahan Missile Complex 20 X23",
-      "lat": 32.52021,
-      "lon": 51.782341,
-      "analyzed_at": "2026-02-16T11:00:00Z",
+      "name": "Isfahan BM Complex 20",
+      "lat": 31.900975,
+      "lon": 50.667643,
+      "analyzed_at": "2026-03-30T23:00:00Z",
       "category": "ballistic_missile_site",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 29.6,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Isfahan area",
+        "geo_change": "relocation",
+        "relocation_note": "stale_or_moved"
       },
       "original_row": {
         "site_id": "IRA-00020",
@@ -759,10 +810,10 @@
     },
     {
       "id": "B-IRA-00003",
-      "name": "AD Battery IRA-0003 X24",
-      "lat": 28.856438,
-      "lon": 51.008152,
-      "analyzed_at": "2026-03-26T17:00:00Z",
+      "name": "AD Battery IRA-0003",
+      "lat": 28.101747,
+      "lon": 51.637676,
+      "analyzed_at": "2026-02-21T01:00:00Z",
       "category": "sam_site",
       "attributes": {
         "region": "iran",
@@ -770,7 +821,9 @@
         "height_m": 54.0,
         "range_km": 339.2,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "relocation",
+        "relocation_note": "stale_or_moved"
       },
       "original_row": {
         "site_id": "IRA-00003",
@@ -789,17 +842,18 @@
     },
     {
       "id": "B-IRA-00018",
-      "name": "Base Support IRA 0018 X25",
-      "lat": 34.364677,
-      "lon": 47.248469,
-      "analyzed_at": "2026-02-21T06:00:00Z",
+      "name": "Base Support IRA-0018 X25",
+      "lat": 34.369402,
+      "lon": 47.25663,
+      "analyzed_at": "2026-04-05T06:00:00Z",
       "category": "airbase_support",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 38.6,
         "operator": "Iran Ops",
-        "anchor": "Kermanshah area"
+        "anchor": "Kermanshah area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00018",
@@ -818,16 +872,17 @@
     {
       "id": "B-IRA-00023",
       "name": "Air Support Site IRA-0023 X26",
-      "lat": 37.94074,
-      "lon": 46.298664,
-      "analyzed_at": "2026-02-24T00:00:00Z",
+      "lat": 37.932108,
+      "lon": 46.290896,
+      "analyzed_at": "2026-03-26T00:00:00Z",
       "category": "airbase_support",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 61.7,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Tabriz area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00023",
@@ -846,16 +901,17 @@
     {
       "id": "B-IRA-00022",
       "name": "Bandar Command Post 22 X27",
-      "lat": 27.091864,
-      "lon": 56.108654,
-      "analyzed_at": "2026-02-26T21:00:00Z",
+      "lat": 27.677336,
+      "lon": 56.623347,
+      "analyzed_at": "2026-02-10T21:00:00Z",
       "category": "command_post",
       "attributes": {
         "region": "iran",
         "status": "degraded",
         "height_m": 60.4,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "relocation"
       },
       "original_row": {
         "site_id": "IRA-00022",
@@ -874,9 +930,9 @@
     {
       "id": "B-IRA-00032",
       "name": "Isfahan ELINT Node 32 X28",
-      "lat": 32.273994,
-      "lon": 51.106734,
-      "analyzed_at": "2026-02-19T23:00:00Z",
+      "lat": 32.027395,
+      "lon": 51.998164,
+      "analyzed_at": "2026-03-14T23:00:00Z",
       "category": "elint_site",
       "attributes": {
         "region": "iran",
@@ -884,7 +940,8 @@
         "height_m": 57.3,
         "band": "X-band",
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Isfahan area",
+        "geo_change": "relocation"
       },
       "original_row": {
         "site_id": "IRA-00032",
@@ -904,16 +961,17 @@
     {
       "id": "B-IRA-00038",
       "name": "Ops Center IRA 0038 X29",
-      "lat": 32.546531,
-      "lon": 51.738359,
-      "analyzed_at": "2026-02-13T00:00:00Z",
+      "lat": 33.106644,
+      "lon": 50.9824,
+      "analyzed_at": "2026-03-07T00:00:00Z",
       "category": "command_post",
       "attributes": {
         "region": "iran",
         "status": "degraded",
         "height_m": 55.5,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Isfahan area",
+        "geo_change": "relocation"
       },
       "original_row": {
         "site_id": "IRA-00038",
@@ -931,17 +989,18 @@
     },
     {
       "id": "B-IRA-00024",
-      "name": "C2 Node IRA-0024 X30",
-      "lat": 34.339549,
-      "lon": 46.880759,
-      "analyzed_at": "2026-02-27T05:00:00Z",
+      "name": "C2 Post IRA-0024 X30",
+      "lat": 33.496335,
+      "lon": 47.234552,
+      "analyzed_at": "2026-04-04T05:00:00Z",
       "category": "command_post",
       "attributes": {
         "region": "iran",
         "status": "active",
         "height_m": 30.6,
         "operator": "Iran Ops",
-        "anchor": "Kermanshah area"
+        "anchor": "Kermanshah area",
+        "geo_change": "relocation"
       },
       "original_row": {
         "site_id": "IRA-00024",
@@ -959,10 +1018,10 @@
     },
     {
       "id": "B-IRA-00017",
-      "name": "Coastal Watch IRA 0017 X31",
-      "lat": 38.178518,
-      "lon": 46.244256,
-      "analyzed_at": "2026-03-19T15:00:00Z",
+      "name": "Coastal Watch IRA-0017 X31",
+      "lat": 38.18333,
+      "lon": 46.245787,
+      "analyzed_at": "2026-03-23T15:00:00Z",
       "category": "surveillance_radar",
       "attributes": {
         "region": "iran",
@@ -971,7 +1030,8 @@
         "band": "C-band",
         "range_km": 231.5,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Tabriz area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00017",
@@ -992,9 +1052,9 @@
     {
       "id": "B-IRA-00006",
       "name": "Kermanshah AD Battery 6 X32",
-      "lat": 34.371929,
-      "lon": 47.127842,
-      "analyzed_at": "2026-03-05T04:00:00Z",
+      "lat": 34.367588,
+      "lon": 47.133086,
+      "analyzed_at": "2026-04-03T04:00:00Z",
       "category": "sam_site",
       "attributes": {
         "region": "iran",
@@ -1002,7 +1062,8 @@
         "height_m": 47.2,
         "range_km": 130.0,
         "operator": "Iran Ops",
-        "anchor": "Kermanshah area"
+        "anchor": "Kermanshah area",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00006",
@@ -1021,10 +1082,10 @@
     },
     {
       "id": "B-IRA-00009",
-      "name": "EW Radar IRA-0009 X33",
-      "lat": 28.982695,
-      "lon": 50.168555,
-      "analyzed_at": "2026-03-18T17:00:00Z",
+      "name": "EW Radar IRA 0009 X33",
+      "lat": 28.97587,
+      "lon": 50.166117,
+      "analyzed_at": "2026-03-02T17:00:00Z",
       "category": "early_warning_radar",
       "attributes": {
         "region": "iran",
@@ -1033,7 +1094,8 @@
         "band": "UHF",
         "range_km": 448.4,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00009",
@@ -1054,9 +1116,9 @@
     {
       "id": "B-IRA-00016",
       "name": "Bandar EW Radar 16 X34",
-      "lat": 27.018385,
-      "lon": 56.343274,
-      "analyzed_at": "2026-03-22T04:00:00Z",
+      "lat": 28.592205,
+      "lon": 56.389245,
+      "analyzed_at": "2026-03-29T04:00:00Z",
       "category": "early_warning_radar",
       "attributes": {
         "region": "iran",
@@ -1065,7 +1127,8 @@
         "band": "UHF",
         "range_km": 94.2,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Bandar Abbas",
+        "geo_change": "relocation"
       },
       "original_row": {
         "site_id": "IRA-00016",
@@ -1085,17 +1148,18 @@
     },
     {
       "id": "B-IRA-00015",
-      "name": "Air Support Site IRA-0015 X35",
-      "lat": 28.926223,
-      "lon": 50.991951,
-      "analyzed_at": "2026-03-10T12:00:00Z",
+      "name": "Air Support St IRA-0015-B X35",
+      "lat": 28.931546,
+      "lon": 50.992577,
+      "analyzed_at": "2026-03-17T12:00:00Z",
       "category": "airbase_support",
       "attributes": {
         "region": "iran",
         "status": "degraded",
         "height_m": 39.6,
         "operator": "Iran Ops",
-        "anchor": "Bushehr coastal"
+        "anchor": "Bushehr coastal",
+        "geo_change": "tolerance_jitter"
       },
       "original_row": {
         "site_id": "IRA-00015",
@@ -1114,87 +1178,88 @@
     {
       "id": "B-UQ-0001",
       "name": "Unique Delta 1",
-      "lat": 38.282083,
-      "lon": 48.761681,
-      "analyzed_at": "2026-02-06T07:00:00Z",
-      "category": "coastal_defense",
+      "lat": 35.519595,
+      "lon": 49.344172,
+      "analyzed_at": "2026-02-17T01:00:00Z",
+      "category": "ballistic_missile_site",
       "attributes": {
         "region": "iran",
-        "status": "active",
-        "height_m": 28.3,
+        "status": "maintenance",
+        "height_m": 12.0,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Kermanshah area",
+        "geo_change": "unique_noise"
       },
       "original_row": {
-        "site_id": "IRA-00005",
-        "label": "Coastal Defense IRA-0005",
-        "latitude": 38.168308,
-        "longitude": 46.489348,
-        "as_of": "2026-02-06T07:00:00Z",
-        "asset_type": "coastal_defense",
+        "site_id": "IRA-00036",
+        "label": "Strategic Pad IRA-0036",
+        "latitude": 33.864551,
+        "longitude": 46.267201,
+        "as_of": "2026-02-17T01:00:00Z",
+        "asset_type": "ballistic_missile_site",
         "region": "iran",
-        "status": "active",
-        "height_m": 28.3,
+        "status": "maintenance",
+        "height_m": 12.0,
         "operator": "Iran Ops",
-        "anchor": "Tabriz area"
+        "anchor": "Kermanshah area"
       }
     },
     {
       "id": "B-UQ-0002",
       "name": "Unique Delta 2",
-      "lat": 25.405925,
-      "lon": 55.502014,
-      "analyzed_at": "2026-01-26T02:00:00Z",
+      "lat": 38.257451,
+      "lon": 44.286942,
+      "analyzed_at": "2026-02-01T19:00:00Z",
       "category": "coastal_defense",
       "attributes": {
         "region": "iran",
         "status": "active",
-        "height_m": 14.6,
+        "height_m": 14.4,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Tabriz area",
+        "geo_change": "unique_noise"
       },
       "original_row": {
-        "site_id": "IRA-00034",
-        "label": "Shore Battery IRA-0034",
-        "latitude": 27.147165,
-        "longitude": 56.189514,
-        "as_of": "2026-01-26T02:00:00Z",
+        "site_id": "IRA-00029",
+        "label": "Coastal Defense IRA-0029",
+        "latitude": 38.026174,
+        "longitude": 46.138326,
+        "as_of": "2026-02-01T19:00:00Z",
         "asset_type": "coastal_defense",
         "region": "iran",
         "status": "active",
-        "height_m": 14.6,
+        "height_m": 14.4,
         "operator": "Iran Ops",
-        "anchor": "Bandar Abbas"
+        "anchor": "Tabriz area"
       }
     },
     {
       "id": "B-UQ-0003",
       "name": "Unique Delta 3",
-      "lat": 30.734222,
-      "lon": 51.763358,
-      "analyzed_at": "2026-02-07T23:00:00Z",
-      "category": "elint_site",
+      "lat": 31.26786,
+      "lon": 53.409074,
+      "analyzed_at": "2026-02-08T12:00:00Z",
+      "category": "airbase_support",
       "attributes": {
         "region": "iran",
-        "status": "standby",
-        "height_m": 57.3,
-        "band": "X-band",
+        "status": "degraded",
+        "height_m": 39.6,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Bushehr coastal",
+        "geo_change": "unique_noise"
       },
       "original_row": {
-        "site_id": "IRA-00032",
-        "label": "Isfahan ELINT Node 32",
-        "latitude": 32.271613,
-        "longitude": 51.103877,
-        "as_of": "2026-02-07T23:00:00Z",
-        "asset_type": "elint_site",
+        "site_id": "IRA-00015",
+        "label": "Air Support Site IRA-0015",
+        "latitude": 28.929065,
+        "longitude": 50.987715,
+        "as_of": "2026-02-08T12:00:00Z",
+        "asset_type": "airbase_support",
         "region": "iran",
-        "status": "standby",
-        "height_m": 57.3,
-        "band": "X-band",
+        "status": "degraded",
+        "height_m": 39.6,
         "operator": "Iran Ops",
-        "anchor": "Isfahan area"
+        "anchor": "Bushehr coastal"
       }
     }
   ],
@@ -1202,196 +1267,266 @@
     {
       "a": "IRA-00040",
       "b": "B-IRA-00040",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 11.1
     },
     {
       "a": "IRA-00010",
       "b": "B-IRA-00010",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 11.8
     },
     {
       "a": "IRA-00036",
       "b": "B-IRA-00036",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 7.3
     },
     {
       "a": "IRA-00027",
       "b": "B-IRA-00027",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 12.2
     },
     {
       "a": "IRA-00001",
       "b": "B-IRA-00001",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 10.3
     },
     {
       "a": "IRA-00005",
       "b": "B-IRA-00005",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 11.8
     },
     {
       "a": "IRA-00034",
       "b": "B-IRA-00034",
-      "expected": "exact_match"
+      "expected": "exact_match",
+      "geo_change": "tiny_jitter",
+      "approx_geo_m": 4.8
     },
     {
       "a": "IRA-00002",
       "b": "B-IRA-00002",
-      "expected": "exact_match"
+      "expected": "temporal_variant",
+      "geo_change": "tolerance_jitter",
+      "date_diff_days": 6,
+      "approx_geo_m": 22.0
     },
     {
       "a": "IRA-00033",
       "b": "B-IRA-00033",
-      "expected": "exact_match"
+      "expected": "temporal_variant",
+      "geo_change": "tolerance_jitter",
+      "date_diff_days": 8,
+      "approx_geo_m": 54.5
     },
     {
       "a": "IRA-00029",
       "b": "B-IRA-00029",
       "expected": "temporal_variant",
-      "date_diff_days": 22
+      "geo_change": "tolerance_jitter",
+      "date_diff_days": 19,
+      "approx_geo_m": 27.2
     },
     {
       "a": "IRA-00008",
       "b": "B-IRA-00008",
       "expected": "temporal_variant",
-      "date_diff_days": 3
+      "geo_change": "tolerance_jitter",
+      "date_diff_days": 5,
+      "approx_geo_m": 10.3
     },
     {
       "a": "IRA-00039",
       "b": "B-IRA-00039",
       "expected": "temporal_variant",
-      "date_diff_days": 5
+      "geo_change": "tolerance_jitter",
+      "date_diff_days": 26,
+      "approx_geo_m": 32.5
     },
     {
       "a": "IRA-00004",
       "b": "B-IRA-00004",
       "expected": "temporal_variant",
-      "date_diff_days": 26
+      "geo_change": "tolerance_jitter",
+      "date_diff_days": 7,
+      "approx_geo_m": 42.3
     },
     {
       "a": "IRA-00011",
       "b": "B-IRA-00011",
-      "expected": "temporal_variant",
-      "date_diff_days": 7
+      "expected": "spatial_proximity_candidate",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 137.2
     },
     {
       "a": "IRA-00021",
       "b": "B-IRA-00021",
-      "expected": "temporal_variant",
-      "date_diff_days": 12
+      "expected": "spatial_proximity_candidate",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 170.8
     },
     {
       "a": "IRA-00030",
       "b": "B-IRA-00030",
-      "expected": "temporal_variant",
-      "date_diff_days": 25
+      "expected": "spatial_proximity_candidate",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 211.0
     },
     {
       "a": "IRA-00037",
       "b": "B-IRA-00037",
       "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 191.1
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 98.0
     },
     {
       "a": "IRA-00028",
       "b": "B-IRA-00028",
       "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 209.9
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 145.2
     },
     {
       "a": "IRA-00019",
       "b": "B-IRA-00019",
       "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 207.8
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 243.8
     },
     {
       "a": "IRA-00031",
       "b": "B-IRA-00031",
-      "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 234.2
+      "expected": "relocated",
+      "geo_change": "relocation",
+      "approx_geo_m": 135174.3,
+      "date_diff_days": 23
     },
     {
       "a": "IRA-00014",
       "b": "B-IRA-00014",
-      "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 153.3
+      "expected": "relocated",
+      "geo_change": "relocation",
+      "approx_geo_m": 122770.3,
+      "date_diff_days": 50
     },
     {
       "a": "IRA-00007",
       "b": "B-IRA-00007",
-      "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 144.4
+      "expected": "relocated",
+      "geo_change": "relocation",
+      "approx_geo_m": 106587.7,
+      "date_diff_days": 29
     },
     {
       "a": "IRA-00035",
       "b": "B-IRA-00035",
-      "expected": "spatial_proximity_candidate",
-      "approx_geo_m": 113.1
+      "expected": "relocated",
+      "geo_change": "relocation",
+      "approx_geo_m": 147525.3,
+      "date_diff_days": 49
     },
     {
       "a": "IRA-00020",
       "b": "B-IRA-00020",
-      "expected": "weak_or_unmatched"
+      "expected": "relocated",
+      "geo_change": "relocation",
+      "approx_geo_m": 124804.5,
+      "date_diff_days": 54
     },
     {
       "a": "IRA-00003",
       "b": "B-IRA-00003",
-      "expected": "weak_or_unmatched"
+      "expected": "relocated",
+      "geo_change": "relocation",
+      "approx_geo_m": 104187.5,
+      "date_diff_days": 14
     },
     {
       "a": "IRA-00018",
       "b": "B-IRA-00018",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 748.5
     },
     {
       "a": "IRA-00023",
       "b": "B-IRA-00023",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 550.1
     },
     {
       "a": "IRA-00022",
       "b": "B-IRA-00022",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "relocation",
+      "approx_geo_m": 82989.6
     },
     {
       "a": "IRA-00032",
       "b": "B-IRA-00032",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "relocation",
+      "approx_geo_m": 88455.3
     },
     {
       "a": "IRA-00038",
       "b": "B-IRA-00038",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "relocation",
+      "approx_geo_m": 94516.2
     },
     {
       "a": "IRA-00024",
       "b": "B-IRA-00024",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "relocation",
+      "approx_geo_m": 98946.2
     },
     {
       "a": "IRA-00017",
       "b": "B-IRA-00017",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 515.9
     },
     {
       "a": "IRA-00006",
       "b": "B-IRA-00006",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 862.2
     },
     {
       "a": "IRA-00009",
       "b": "B-IRA-00009",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 888.3
     },
     {
       "a": "IRA-00016",
       "b": "B-IRA-00016",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "relocation",
+      "approx_geo_m": 175001.4
     },
     {
       "a": "IRA-00015",
       "b": "B-IRA-00015",
-      "expected": "weak_or_unmatched"
+      "expected": "weak_or_unmatched",
+      "geo_change": "tolerance_jitter",
+      "approx_geo_m": 548.4
     }
   ]
 }

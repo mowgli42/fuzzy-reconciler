@@ -14,7 +14,7 @@ import-samples:
 # Small committed set for CI / clean checkout (tracked under fixtures/regions/canonical/).
 fixtures-regions-canonical:
 	.venv/bin/python scripts/generate_regional_locations.py --region iran --count 40 --seed 42 --out fixtures/regions/canonical/iran_base.json
-	.venv/bin/python scripts/generate_delta.py --base fixtures/regions/canonical/iran_base.json --out fixtures/regions/canonical/iran_delta.json --also-write-pair fixtures/regions/canonical/iran_pair.json --seed 99 --fraction 0.9
+	.venv/bin/python scripts/generate_delta.py --base fixtures/regions/canonical/iran_base.json --out fixtures/regions/canonical/iran_delta.json --also-write-pair fixtures/regions/canonical/iran_pair.json --seed 99 --fraction 0.9 --geo-mode mixed
 
 # Synthetic hot-spot regional fixtures (radars, missile sites, airports, etc.) + delta pair.
 # Large outputs under fixtures/regions/*_base.json are gitignored; regenerate after checkout.

@@ -197,11 +197,13 @@ The repository SHALL provide standalone scripts that generate scalable synthetic
 
 **Delta tool** (`scripts/generate_delta.py`):
 - SHALL accept a base regional fixture and produce an updated List B with controlled variations:
-  - exact / near-exact (small geo jitter)
+  - exact / near-exact (tiny geo jitter)
   - temporal_variant (date shift within tolerance + mild name/attr drift)
-  - spatial_proximity_candidate (geo separation ~80–320 m, name drift, high attr overlap)
+  - spatial_proximity_candidate (nearby tolerance jitter ~80–250 m, name drift, high attr overlap)
+  - **relocated / stale location** (same entity identity cues, but coords moved ~50–150 km — outside typical matching radius)
   - weak / unique noise
-- SHALL emit optional `ground_truth` pair expectations for automated unit tests.
+- SHALL support `--geo-mode` of `jitter` (tolerance randomization only), `relocation` (unknown-move randomization), or `mixed` (both).
+- SHALL emit optional `ground_truth` pair expectations for automated unit tests, including `geo_change` of `tolerance_jitter` or `relocation`.
 - SHALL support writing a combined `list_a` / `list_b` pair fixture for direct compare tests.
 
 **Testing / checkout integration:**

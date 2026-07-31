@@ -71,6 +71,8 @@ def _ensure_canonical() -> Path:
             "99",
             "--fraction",
             "0.9",
+            "--geo-mode",
+            "mixed",
         ],
         cwd=ROOT,
     )
@@ -211,6 +213,8 @@ class TestRegionalScaleSmoke:
                 "11",
                 "--fraction",
                 "0.85",
+                "--geo-mode",
+                "mixed",
             ],
             cwd=ROOT,
         )
