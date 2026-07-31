@@ -1,4 +1,4 @@
-.PHONY: install fixtures import-samples test backend frontend demo
+.PHONY: install fixtures import-samples fixtures-regions fixtures-regions-small test backend frontend demo
 
 install:
 	python3 -m venv .venv
@@ -10,6 +10,16 @@ fixtures:
 
 import-samples:
 	.venv/bin/python scripts/generate_import_samples.py
+
+# Synthetic hot-spot regional fixtures (radars, missile sites, etc.) + delta pair for unit tests.
+# Large outputs under fixtures/regions/ are gitignored by default; regenerate after checkout.
+fixtures-regions-small:
+	.venv/bin/python scripts/generate_regional_locations.py --region all --count 50 --out fixtures/regions/
+	.venv/bin/python scripts/generate_delta.py --base fixtures/regions/iran_base.json --out fixtures/regions/iran_delta.json --also-write-pair fixtures/regions/iran_pair.json
+
+fixtures-regions:
+	.venv/bin/python scripts/generate_regional_locations.py --region all --count 500 --out fixtures/regions/
+	.venv/bin/python scripts/generate_delta.py --base fixtures/regions/iran_base.json --out fixtures/regions/iran_delta.json --also-write-pair fixtures/regions/iran_pair.json --fraction 0.85
 
 test: import-samples
 	PYTHONPATH=src .venv/bin/pytest -q

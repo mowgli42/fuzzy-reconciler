@@ -55,6 +55,12 @@ exports/
 playwright-report/
 test-results/
 
+# Large synthetic regional fixtures (regenerate via make fixtures-regions*)
+fixtures/regions/*_base.json
+fixtures/regions/*_delta.json
+fixtures/regions/*_pair.json
+!fixtures/regions/README.md
+
 # Beads / Dolt files (added by bd init)
 .dolt/
 *.db
