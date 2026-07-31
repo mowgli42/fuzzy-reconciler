@@ -173,7 +173,7 @@ The complete service SHALL run comfortably on modest developer hardware and depl
 The repository SHALL provide standalone scripts that generate scalable synthetic entity lists (10–thousands) for unit, integration, and performance testing of ingest + fuzzy matching.
 
 **Regional generator** (`scripts/generate_regional_locations.py`):
-- SHALL produce entities clustered on land around documented key locations in hot-spot regions: `gulf` (Iraq/Kuwait Gulf War area), `iran`, `venezuela`, `cuba`, `russia` (selected western/northern focus), `china` (sample coastal + interior).
+- SHALL produce entities clustered on land around documented key locations in hot-spot regions: `gulf` (Iraq/Kuwait Gulf War area), `iran`, `venezuela`, `cuba`, `russia` (western → far-east showcase), `china` (coastal + interior showcase).
 - Categories SHALL include representative military/ISR-style types for reconcilation testing, e.g.:
   - `surveillance_radar`
   - `early_warning_radar`
@@ -183,13 +183,15 @@ The repository SHALL provide standalone scripts that generate scalable synthetic
   - `command_post`
   - `airbase_support`
   - `elint_site`
-- Each region SHALL expose a set of **key location anchors** (name + lat/lon) used as cluster centers. Example anchors (approximate public geography, synthetic use only):
-  - **gulf**: Baghdad corridor (33.31, 44.37), Basra (30.51, 47.78), Mosul (36.34, 43.13), Kuwait northern (29.50, 47.70), Nasiriyah (31.05, 46.26)
-  - **iran**: Tehran (35.69, 51.39), Isfahan (32.65, 51.68), Bushehr (28.97, 50.84), Bandar Abbas (27.18, 56.27), Tabriz (38.08, 46.29), Kermanshah (34.31, 47.06)
-  - **venezuela**: Caracas (10.48, -66.90), Maracaibo (10.67, -71.61), Puerto La Cruz (10.22, -64.63), Barquisimeto (10.07, -69.32), Ciudad Bolivar (8.12, -63.55)
-  - **cuba**: Havana (23.11, -82.37), Santiago (20.02, -75.83), Guantanamo area (20.14, -75.21), Camaguey (21.38, -77.92), Holguin (20.89, -76.26)
-  - **russia**: Moscow (55.75, 37.62), Kaliningrad (54.71, 20.51), Sevastopol/Crimea (44.62, 33.52), Murmansk (68.97, 33.09), St Petersburg (59.93, 30.33), Rostov (47.24, 39.70)
-  - **china**: Beijing (39.90, 116.40), Shanghai (31.23, 121.47), Hainan (19.20, 109.50), Fujian coast (25.00, 118.50), Guangzhou (23.13, 113.26), Xi'an (34.26, 108.95)
+  - `medium_airport`
+  - `large_airport`
+- Each region SHALL expose a set of **key location anchors** (name + lat/lon) used as cluster centers, including **medium/large airport** anchors for denser Russia / China showcases. Example anchors (approximate public geography, synthetic use only):
+  - **gulf**: Baghdad corridor (33.31, 44.37), Basra (30.51, 47.78), Mosul (36.34, 43.13), Kuwait northern (29.50, 47.70), Nasiriyah (31.05, 46.26), Baghdad / Basra / Kuwait airports
+  - **iran**: Tehran (35.69, 51.39), Isfahan (32.65, 51.68), Bushehr (28.97, 50.84), Bandar Abbas (27.18, 56.27), Tabriz (38.08, 46.29), Kermanshah (34.31, 47.06), Imam Khomeini / Mehrabad / Shiraz airports
+  - **venezuela**: Caracas (10.48, -66.90), Maracaibo (10.67, -71.61), Puerto La Cruz (10.22, -64.63), Barquisimeto (10.07, -69.32), Ciudad Bolivar (8.12, -63.55), Maiquetía / La Chinita airports
+  - **cuba**: Havana (23.11, -82.37), Santiago (20.02, -75.83), Guantanamo area (20.14, -75.21), Camaguey (21.38, -77.92), Holguin (20.89, -76.26), José Martí / Antonio Maceo airports
+  - **russia**: Moscow, St Petersburg, Kaliningrad, Murmansk, Rostov, Kazan, Yekaterinburg, Novosibirsk, Irkutsk, Vladivostok, Petropavlovsk-Kamchatsky, plus large airports (Sheremetyevo, Domodedovo, Pulkovo, Tolmachevo, Knevichi, …). Showcase size **1000** entities.
+  - **china**: Beijing, Shanghai, Guangzhou, Shenzhen, Chengdu, Xi'an, Wuhan, Hangzhou, Kunming, Urumqi, Hainan, plus large airports (Capital, Daxing, Pudong, Baiyun, Baoan, Shuangliu, …). Showcase size **2000** entities.
 - Output SHALL be JSON with `meta` (region, anchors, seed, counts, categories) and `entities` list matching the core Entity schema (id, name, lat, lon, analyzed_at, category, attributes).
 - Generation SHALL be deterministic given `--seed` and pure-stdlib (no external landmask required; offsets + region bbox clamping keep points near land clusters).
 
@@ -216,10 +218,11 @@ The repository SHALL provide standalone scripts that generate scalable synthetic
 
 #### Scenario: Scale to multi-region load fixture
 
-- **GIVEN** `python scripts/generate_regional_locations.py --region all --count 500 --out fixtures/regions/`
+- **GIVEN** `python scripts/generate_regional_locations.py --showcase --out fixtures/regions/examples/` (Russia **1000**, China **2000**, other regions at documented showcase sizes; includes `medium_airport` / `large_airport`)
 - **WHEN** any single region file is compared against its delta counterpart
-- **THEN** comparison SHALL complete within the performance envelope defined for moderate lists
+- **THEN** comparison SHALL complete within the performance envelope defined for moderate-to-large lists
 - **AND** meta.anchors and meta.categories SHALL be present for documentation and test assertions
+- **AND** maps MAY be generated via `scripts/plot_regional_pair_map.py --examples-dir fixtures/regions/examples/` (blue = List A, red = List B)
 
 ## Non-Functional & Cross-Cutting
 

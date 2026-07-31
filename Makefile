@@ -1,4 +1,4 @@
-.PHONY: install fixtures import-samples fixtures-regions fixtures-regions-small fixtures-regions-canonical test backend frontend demo
+.PHONY: install fixtures import-samples fixtures-regions fixtures-regions-small fixtures-regions-canonical fixtures-regions-showcase test backend frontend demo
 
 install:
 	python3 -m venv .venv
@@ -16,7 +16,7 @@ fixtures-regions-canonical:
 	.venv/bin/python scripts/generate_regional_locations.py --region iran --count 40 --seed 42 --out fixtures/regions/canonical/iran_base.json
 	.venv/bin/python scripts/generate_delta.py --base fixtures/regions/canonical/iran_base.json --out fixtures/regions/canonical/iran_delta.json --also-write-pair fixtures/regions/canonical/iran_pair.json --seed 99 --fraction 0.9
 
-# Synthetic hot-spot regional fixtures (radars, missile sites, etc.) + delta pair.
+# Synthetic hot-spot regional fixtures (radars, missile sites, airports, etc.) + delta pair.
 # Large outputs under fixtures/regions/*_base.json are gitignored; regenerate after checkout.
 fixtures-regions-small:
 	.venv/bin/python scripts/generate_regional_locations.py --region all --count 50 --out fixtures/regions/
@@ -25,6 +25,10 @@ fixtures-regions-small:
 fixtures-regions:
 	.venv/bin/python scripts/generate_regional_locations.py --region all --count 500 --out fixtures/regions/
 	.venv/bin/python scripts/generate_delta.py --base fixtures/regions/iran_base.json --out fixtures/regions/iran_delta.json --also-write-pair fixtures/regions/iran_pair.json --seed 99 --fraction 0.85
+
+# Expected showcase sizes: russia=1000, china=2000, + med/large airports. Lists + maps.
+fixtures-regions-showcase:
+	.venv/bin/python scripts/generate_showcase_regions.py --screenshot
 
 test: import-samples
 	PYTHONPATH=src .venv/bin/pytest -q

@@ -23,8 +23,9 @@ Local-first. No cloud or LLM required for core matching.
 | Category inventory / over-count signals | Shipped |
 | Merge board + publish working set + CSV/JSON export | Shipped |
 | API robustness suite + import fixtures | Shipped (`make test`, 29+ tests) |
-| Regional location generator + delta tool (OpenSpec) | Shipped — `scripts/generate_regional_*.py` |
+| Regional location generator + delta tool (OpenSpec) | Shipped — airports + RU/CN showcase |
 | Regional fixtures in unit/CI tests | Shipped — `fixtures/regions/canonical/`, issue #11 |
+| Showcase maps (all regions; RU 1000 / CN 2000) | Shipped — `docs/REGIONAL-FIXTURES.md` |
 | Vercel deploy (stateless API + browser-local history) | Shipped — see `docs/VERCEL.md` |
 
 Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md` · Regional generator: [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md)
@@ -128,16 +129,16 @@ flowchart TD
 
 ### Regional / load fixtures
 
-Scalable synthetic hot-spot lists (radars, missile sites, etc.) for matching stress tests:
+Scalable synthetic hot-spot lists (radars, missile sites, **med/large airports**, etc.):
 
 ```bash
-make fixtures-regions-canonical   # small Iran pair committed for CI
-make fixtures-regions-small       # ~50/region (gitignored)
+make fixtures-regions-canonical   # small Iran pair for CI
+make fixtures-regions-showcase    # all regions; Russia 1000, China 2000 + maps
+make fixtures-regions-small       # ~50/region (gitignored root copies)
 make fixtures-regions             # ~500/region (gitignored)
 ```
 
-See `fixtures/regions/README.md` and the full write-up with map:
-[`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md).
+See [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md) for maps (blue = A, red = B).
 
 ---
 
