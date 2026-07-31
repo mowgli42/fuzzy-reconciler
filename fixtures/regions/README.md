@@ -39,3 +39,5 @@ Regions: `gulf`, `iran`, `venezuela`, `cuba`, `russia`, `china` (or `--region al
 Large `fixtures/regions/*_base.json` / `*_delta.json` / `*_pair.json` at the regions root are **gitignored**. Prefer `canonical/` for unit tests; regenerate large files locally for load experiments.
 
 **These files are synthetic test data only**, not real site lists.
+
+Full write-up with map (blue = A, red = B): [`docs/REGIONAL-FIXTURES.md`](../../docs/REGIONAL-FIXTURES.md).

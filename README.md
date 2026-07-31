@@ -27,7 +27,7 @@ Local-first. No cloud or LLM required for core matching.
 | Regional fixtures in unit/CI tests | Shipped — `fixtures/regions/canonical/`, issue #11 |
 | Vercel deploy (stateless API + browser-local history) | Shipped — see `docs/VERCEL.md` |
 
-Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md`
+Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md` · Regional generator: [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md)
 
 ---
 
@@ -136,7 +136,8 @@ make fixtures-regions-small       # ~50/region (gitignored)
 make fixtures-regions             # ~500/region (gitignored)
 ```
 
-See `fixtures/regions/README.md` and OpenSpec **Synthetic Regional Test Data Generation**.
+See `fixtures/regions/README.md` and the full write-up with map:
+[`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md).
 
 ---
 
