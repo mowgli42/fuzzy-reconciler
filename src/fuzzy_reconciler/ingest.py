@@ -142,8 +142,10 @@ def parse_json_payload(raw: str | list | dict) -> list[dict[str, Any]]:
     data = json.loads(text)
     if isinstance(data, dict) and "features" in data:
         return [_geojson_feature_to_row(f) for f in data["features"]]
-    if isinstance(data, dict) and "list_a" in data:
-        return data["list_a"]
+    if isinstance(data, dict) and ("list_a" in data or "entities" in data):
+        return data.get("entities") or data.get("list_a") or []
+    if isinstance(data, dict) and "list_b" in data:
+        return data.get("list_b") or []
     if isinstance(data, list):
         return data
     return [data]

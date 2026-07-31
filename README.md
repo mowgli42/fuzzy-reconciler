@@ -23,6 +23,8 @@ Local-first. No cloud or LLM required for core matching.
 | Category inventory / over-count signals | Shipped |
 | Merge board + publish working set + CSV/JSON export | Shipped |
 | API robustness suite + import fixtures | Shipped (`make test`, 29+ tests) |
+| Regional location generator + delta tool (OpenSpec) | Shipped — `scripts/generate_regional_*.py` |
+| Regional fixtures in unit/CI tests | Shipped — `fixtures/regions/canonical/`, issue #11 |
 | Vercel deploy (stateless API + browser-local history) | Shipped — see `docs/VERCEL.md` |
 
 Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md`
@@ -120,9 +122,21 @@ flowchart TD
 | Backend | FastAPI, Pydantic v2, rapidfuzz, haversine (pure Python) — routes under `/api` |
 | Hosting | Local Docker/uvicorn, or **Vercel** (static UI + serverless API) |
 | Persistence | Browser `localStorage` by default (demo); shared DB optional / not required |
-| Fixtures | `fixtures/small_demo.json`, `fixtures/imports/*` |
-| Tests | `pytest` API + engine + ingest (`make test`) |
+| Fixtures | `fixtures/small_demo.json`, `fixtures/imports/*`, `fixtures/regions/canonical/` |
+| Tests | `pytest` API + engine + ingest + regional (`make test`) |
 | Container | `Dockerfile`, `docker-compose.yml` (API :8010) |
+
+### Regional / load fixtures
+
+Scalable synthetic hot-spot lists (radars, missile sites, etc.) for matching stress tests:
+
+```bash
+make fixtures-regions-canonical   # small Iran pair committed for CI
+make fixtures-regions-small       # ~50/region (gitignored)
+make fixtures-regions             # ~500/region (gitignored)
+```
+
+See `fixtures/regions/README.md` and OpenSpec **Synthetic Regional Test Data Generation**.
 
 ---
 
@@ -161,11 +175,14 @@ src/fuzzy_reconciler/
   matching/engine.py      # Compare pipeline
   models.py / presets.py
 frontend/                 # Operator UI
-fixtures/                 # Demo + import samples
-tests/                    # Engine, ingest, API robustness
+fixtures/                 # Demo + import samples + regions/canonical
+tests/                    # Engine, ingest, API robustness, regional
+.github/workflows/test.yml
 docs/screenshots/         # Current UI captures
 docs/TEST-REPORT-IMPORT-COMPARE.md
 openspec/specs/…/spec.md
+scripts/generate_regional_locations.py
+scripts/generate_delta.py
 ```
 
 ---

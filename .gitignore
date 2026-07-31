@@ -60,6 +60,8 @@ fixtures/regions/*_base.json
 fixtures/regions/*_delta.json
 fixtures/regions/*_pair.json
 !fixtures/regions/README.md
+!fixtures/regions/canonical/
+!fixtures/regions/canonical/**
 
 # Beads / Dolt files (added by bd init)
 .dolt/

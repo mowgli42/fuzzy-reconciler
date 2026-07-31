@@ -67,6 +67,20 @@ def name_variants(name: str, rng: random.Random) -> str:
     return out.strip() or name
 
 
+def spatial_name_drift(name: str, rng: random.Random, idx: int) -> str:
+    """Stronger rename so name_score stays below typical min_name_similarity."""
+    tokens = [
+        "Site",
+        "Node",
+        "Pad",
+        "Complex",
+        "Facility",
+        "Installation",
+        "Emplacement",
+    ]
+    return f"{rng.choice(tokens)} {rng.choice(['NT', 'XR', 'KQ', 'ZV'])}-{idx:03d}"
+
+
 def apply_delta(
     entities: list[dict],
     *,
@@ -131,11 +145,12 @@ def apply_delta(
             list_b.append(dst)
             continue
         elif rank < n_exact + n_temporal + n_spatial:
-            sep = rng.uniform(80, 320)
+            sep = rng.uniform(80, 250)
             lat2, lon2 = offset_m(lat, lon, sep * rng.uniform(0.1, 0.4), sep * rng.uniform(0.7, 1.0))
             dst["lat"], dst["lon"] = round(lat2, 6), round(lon2, 6)
             dst["analyzed_at"] = fmt_dt(dt + timedelta(days=rng.randint(0, 5)))
-            dst["name"] = name_variants(src["name"], rng)
+            # Force strong name drift so classification prefers spatial_proximity_candidate
+            dst["name"] = spatial_name_drift(src["name"], rng, rank)
             # keep category + most attrs so attr_score stays high
             expected = "spatial_proximity_candidate"
             ground_truth.append(

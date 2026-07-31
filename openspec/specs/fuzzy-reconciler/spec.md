@@ -248,6 +248,6 @@ This spec is intentionally self-contained so a new repository can be initialized
 
 ---
 
-**Status**: specified (ready for Beads breakdown and implementation); regional synthetic data tooling specified and scripts landed on `main`.
+**Status**: specified + regional synthetic data tooling on `main` with canonical fixtures and CI unit tests (GitHub issue #11).
 
 **Related capabilities**: Could later integrate with orientation-layer style sensemaking for large ambiguous result sets, or human-in-the-loop confirmation queues.
