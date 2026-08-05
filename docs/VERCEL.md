@@ -51,15 +51,20 @@ Requires a Vercel account login (`vercel login`) or `VERCEL_TOKEN`.
 | Step | Source |
 |------|--------|
 | Node install + `vite build` | `vercel.json` `buildCommand` / `installCommand` |
-| Static UI | Vite output copied to `public/` (CDN) and `src/fuzzy_reconciler/web/` (function fallback) |
+| Static UI | Vite output copied to `public/` (CDN) and `src/fuzzy_reconciler/web/` (ASGI) |
 | Python deps | `pip install .` from `pyproject.toml` (runtime **3.12** via `.python-version`) |
 | ASGI entry | FastAPI framework detection via `api.index:app` — original URL paths are preserved |
-| SPA fallback | Rewrite non-`/api/*` paths to `/index.html` (static only — **not** `/api/index`) |
+| SPA + assets | Served by FastAPI from `src/fuzzy_reconciler/web/` (`/` + `/assets`); no catch-all rewrite |
 | Demo fixtures | Bundled via `functions.api/index.py.includeFiles` |
 
-### Do not rewrite everything to `/api/index`
+### Do not use catch-all rewrites here
 
-A catch-all rewrite such as `{ "source": "/(.*)", "destination": "/api/index" }` used to work when Python ignored rewrite destinations and kept the browser path. Newer Vercel Python runtimes can set the ASGI path to `/api/index` for every request, so FastAPI never matches `/api/health` (or `/`) and returns JSON 404s. Keep `/api/*` on the FastAPI function with the real path; serve the SPA from `public/` + the static rewrite above.
+Two rewrite patterns break this app on current Vercel Python:
+
+1. `{ "source": "/(.*)", "destination": "/api/index" }` — newer runtimes can set the ASGI path to `/api/index` for every request, so FastAPI returns JSON 404s for `/api/health` and `/`.
+2. `{ "source": "/((?!api/).*)", "destination": "/index.html" }` — rewrites `/assets/*.js` and CSS to HTML, so the SPA shell loads but scripts never execute.
+
+Rely on FastAPI framework routing (original paths) and the in-app static/`/` handlers instead.
 
 ## Optional env
 
