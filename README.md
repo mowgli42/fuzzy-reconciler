@@ -71,7 +71,7 @@ make test
 vercel link && vercel --prod
 ```
 
-Same-origin UI + `/api/*` serverless FastAPI. **History (declines / session) stays in each visitor’s browser** — no shared database for the multi-user demo. Details: [`docs/VERCEL.md`](docs/VERCEL.md).
+Same-origin UI (`public/` CDN) + `/api/*` FastAPI function. **History (declines / session) stays in each visitor’s browser** — no shared database for the multi-user demo. Details: [`docs/VERCEL.md`](docs/VERCEL.md) (do not catch-all rewrite to `/api/index`).
 
 ---
 
