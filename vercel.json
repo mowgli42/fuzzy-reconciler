@@ -3,7 +3,7 @@
   "buildCommand": "cd frontend && npm ci && npm run build && rm -rf ../public ../src/fuzzy_reconciler/web && mkdir -p ../public ../src/fuzzy_reconciler/web && cp -R dist/* ../public/ && cp -R dist/* ../src/fuzzy_reconciler/web/",
   "installCommand": "pip install . && cd frontend && npm ci",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/index.py": {

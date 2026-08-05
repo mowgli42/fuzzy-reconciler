@@ -6,8 +6,9 @@ import csv
 import json
 import os
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from fastapi import APIRouter, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -68,6 +69,38 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def vercel_restore_original_path(request: Request, call_next):
+    """Restore the browser path when a rewrite destination leaked into ASGI scope.
+
+    Older Vercel setups rewrote ``/(.*)`` → ``/api/index`` so the Python function
+    would run. Newer Python runtimes may set the ASGI ``path`` to that destination
+    (``/api/index``) instead of the original URL, which makes every route 404.
+    Prefer fixing ``vercel.json`` (no rewrite to ``/api/index``); this recovers
+    when a stale rewrite or platform quirk still collapses the path.
+    """
+    if ON_VERCEL:
+        path = request.scope.get("path") or ""
+        if path == "/api/index" or path.startswith("/api/index/"):
+            original = (
+                request.headers.get("x-forwarded-uri")
+                or request.headers.get("x-invoke-path")
+                or request.headers.get("x-vercel-original-path")
+                or request.headers.get("x-matched-path")
+            )
+            if original:
+                raw = original if "://" in original else f"http://local{original}"
+                parts = urlsplit(raw)
+                new_path = parts.path or "/"
+                if new_path != path:
+                    request.scope["path"] = new_path
+                    request.scope["raw_path"] = new_path.encode("utf-8")
+                    if parts.query:
+                        request.scope["query_string"] = parts.query.encode("utf-8")
+    return await call_next(request)
+
 
 # All HTTP routes live under /api for Vercel same-origin + local Vite proxy.
 api = APIRouter(prefix="/api")
@@ -196,7 +229,9 @@ if _static is not None:
     @app.get("/{full_path:path}")
     def spa_fallback(full_path: str) -> FileResponse:
         if full_path.startswith("api/") or full_path == "api":
-            raise HTTPException(status_code=404, detail="Not found")
+            # Distinct from Starlette's default "Not Found" so mis-routed
+            # /api/* (e.g. collapsed rewrite path) is obvious in the browser.
+            raise HTTPException(status_code=404, detail="API route not found")
         candidate = _static / full_path
         if candidate.is_file():
             return FileResponse(candidate)

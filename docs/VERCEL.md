@@ -5,7 +5,7 @@ The demo is designed for **multi-user, shared hosting without a shared history d
 | Concern | Demo behavior |
 |---------|----------------|
 | API | Stateless FastAPI serverless function (`api/index.py`) |
-| UI | Static Svelte build → `public/` |
+| UI | Static Svelte build in `public/` (CDN) |
 | Decline ledger / session | **Browser `localStorage` only** (per device / browser) |
 | Shared DB | **Not used** — optional later via `PERSISTENCE=database` |
 
@@ -15,11 +15,10 @@ Users on different machines do **not** see each other’s keep-separate history.
 
 1. Push `main` to [mowgli42/fuzzy-reconciler](https://github.com/mowgli42/fuzzy-reconciler) (already the deploy branch).
 2. In [Vercel](https://vercel.com/new): **Add New Project** → Import the GitHub repo.
-3. Leave settings at defaults from `vercel.json`:
+3. Leave settings at defaults from `vercel.json` / `pyproject.toml`:
    - **Root Directory:** repository root (`.`)
-   - **Build Command:** from `vercel.json` (frontend → `public/`)
-   - **Output Directory:** `public`
-   - **Install Command:** from `vercel.json`
+   - **Build / Install:** from `vercel.json`
+   - **Entrypoint:** `[tool.vercel] entrypoint = "api.index:app"`
 4. No environment variables required for the demo.
 5. Deploy. Production URL will serve UI + `/api/*` same-origin.
 
@@ -52,20 +51,22 @@ Requires a Vercel account login (`vercel login`) or `VERCEL_TOKEN`.
 | Step | Source |
 |------|--------|
 | Node install + `vite build` | `vercel.json` `buildCommand` / `installCommand` |
-| Static assets | Vite build copied to `src/fuzzy_reconciler/web/` (and `public/`) during `buildCommand` |
+| Static UI | Vite output copied to `public/` (CDN) and `src/fuzzy_reconciler/web/` (function fallback) |
 | Python deps | `pip install .` from `pyproject.toml` (runtime **3.12** via `.python-version`) |
-| ASGI entry | `api.index:app` — serves **both** `/api/*` and the SPA from package `web/` |
-| Routing | Rewrite `/(.*)` → `/api/index` (nested `/api/*` must hit the same function) |
+| ASGI entry | FastAPI framework detection via `api.index:app` — original URL paths are preserved |
+| SPA fallback | Rewrite non-`/api/*` paths to `/index.html` (static only — **not** `/api/index`) |
 | Demo fixtures | Bundled via `functions.api/index.py.includeFiles` |
 
-> Note: Vercel `outputDirectory` alone broke nested `/api` routes here. The UI is served from the ASGI app using files copied into `src/fuzzy_reconciler/web/` so they always ship with the function.
+### Do not rewrite everything to `/api/index`
+
+A catch-all rewrite such as `{ "source": "/(.*)", "destination": "/api/index" }` used to work when Python ignored rewrite destinations and kept the browser path. Newer Vercel Python runtimes can set the ASGI path to `/api/index` for every request, so FastAPI never matches `/api/health` (or `/`) and returns JSON 404s. Keep `/api/*` on the FastAPI function with the real path; serve the SPA from `public/` + the static rewrite above.
 
 ## Optional env
 
 | Variable | Purpose |
 |----------|---------|
 | `VITE_API_BASE` | Override API prefix (default `/api`) — rebuild frontend if set |
-| `VERCEL` | Set automatically; disables FastAPI static SPA mount |
+| `VERCEL` | Set automatically; used for path-recovery middleware + health metadata |
 
 ## Local parity
 
