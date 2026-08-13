@@ -28,7 +28,7 @@ Local-first. No cloud or LLM required for core matching.
 | Showcase maps (all regions; RU 1000 / CN 2000) | Shipped — `docs/REGIONAL-FIXTURES.md` |
 | Vercel deploy (stateless API + browser-local history) | Shipped — see `docs/VERCEL.md` |
 
-Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md` · Regional generator: [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md)
+Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md` · Regional generator: [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md) · EOB/UCI export: [`docs/EOB-UCI-CONTRACT.md`](docs/EOB-UCI-CONTRACT.md)
 
 ---
 
@@ -108,7 +108,7 @@ flowchart TD
     end
 
     subgraph Backend["Backend — FastAPI + Pydantic"]
-        API["/api/ingest /api/compare /api/demo /api/presets"]
+        API["/api/ingest /api/compare /api/export/oob /api/demo /api/presets"]
         Engine[Matching engine<br/>geo grid block · rapidfuzz · attr · temporal<br/>exact / strong / temporal / spatial / weak]
     end
 

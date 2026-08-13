@@ -86,6 +86,7 @@ class ScoreBreakdown(BaseModel):
     geo_distance_m: float | None = None
     date_diff_days: float | None = None
     name_similarity_pct: float | None = None
+    identity_key_match: bool = False
 
 
 class MatchPair(BaseModel):

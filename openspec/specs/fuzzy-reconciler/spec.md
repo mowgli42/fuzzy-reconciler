@@ -226,6 +226,37 @@ The repository SHALL provide standalone scripts that generate scalable synthetic
 - **AND** meta.anchors and meta.categories SHALL be present for documentation and test assertions
 - **AND** maps MAY be generated via `scripts/plot_regional_pair_map.py --examples-dir fixtures/regions/examples/` (blue = List A, red = List B)
 
+### Requirement: Optional EOB / A-GRA field profile
+
+The service SHALL support an optional **EOB ingest/export profile** aligned with A-GRA `BaseEOB_RecordType` so working sets can feed o-my-mission-plan and o-my-sim without losing Electronic Order of Battle identity keys.
+
+Reserved `attributes` keys (do not collide; document in mapping UI): `eob_record_id`, `elnot`, `be_number`, `o_suffix`, `site_pin`, `evaluation_code`, `country_code`, `mobility`, `operational_status`.
+
+Matching MAY apply an identity-key boost when `elnot` matches or `be_number`+`o_suffix` match (configurable weight). Core geo/name/attr/temporal scoring remains the default when EOB keys are absent.
+
+Send/ingest tables (publisher side): `docs/EOB-UCI-CONTRACT.md`. Consumer contracts: o-my-mission-plan hop 1. Tracks GitHub **#16**.
+
+#### Scenario: EOB keys round-trip on export
+
+- **GIVEN** List A entities with `attributes.eob_record_id` and `elnot`
+- **WHEN** the user exports the reconciled working set (JSON)
+- **THEN** those keys are present on each entity with the same spellings
+- **AND** `id` is unchanged
+
+### Requirement: WorkingEOB / OrderOfBattle distribution export
+
+The service SHALL be able to export a UCI-Lite **`OrderOfBattle`** (topic `uci.oob`) and/or A-GRA **`WorkingEOB`** (topic `uci.eob.working`) for the current working set. `CorrelationID` SHALL equal `OrderOfBattleID`. Each record SHALL include `EntityID` = JSON `id`, position, category, and EOB identity keys when present. Airport categories SHALL be omitted from threat EOB export.
+
+The service SHALL NOT implement the live `WorkingEOB_Request` server, SignalReport fusion, or MissionPlan. An OOB update SHALL be a new version, not an in-place mutate.
+
+#### Scenario: Gulf base export is ingestible by the planner
+
+- **GIVEN** the gulf_base working set (or showcase fixture)
+- **WHEN** OrderOfBattle XML is exported
+- **THEN** every IADS-class entity has a record whose EntityID matches JSON id
+- **AND** MessageType is `OrderOfBattle` or `WorkingEOB`
+- **AND** no airport-only records are included
+
 ## Non-Functional & Cross-Cutting
 
 - **Auditability**: Every classification decision (automated or manual) carries full score vector, thresholds used, and (for manual) actor + rationale + timestamp. Exportable.
@@ -253,6 +284,6 @@ This spec is intentionally self-contained so a new repository can be initialized
 
 ---
 
-**Status**: specified + regional synthetic data tooling on `main` with canonical fixtures and CI unit tests (GitHub issue #11).
+**Status**: specified + regional synthetic data tooling on `main` with canonical fixtures and CI unit tests (GitHub issue #11). EOB profile + `POST /api/export/oob` OrderOfBattle export implemented (GitHub #16 / #19); live bus publish still later.
 
 **Related capabilities**: Could later integrate with orientation-layer style sensemaking for large ambiguous result sets, or human-in-the-loop confirmation queues.
