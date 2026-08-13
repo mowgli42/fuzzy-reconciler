@@ -37,7 +37,7 @@ Core Entity (already specified): `id`, `name`, `lat`, `lon`, `analyzed_at`, `cat
 | `mobility` | no | `MobilityEnum`; default `FIXED` for IADS sites | planner treats as fixed |
 | `operational_status` | no | `SiteOperationalStatus` | wins over `attributes.status` if both set |
 
-Matching MAY boost when `elnot` or `be_number`+`o_suffix` match (optional phase of #16).
+Matching boosts when `elnot` or `be_number`+`o_suffix` match (`identity_keys_match` → `strong_fuzzy_match`).
 
 **Ignore OK for consumers:** `original_row`, UI reconciliation class, showcase-only airport rows (planner drops airports).
 
@@ -97,8 +97,10 @@ Same `id`. Relocations are Find/Fix pressure, not a new planned waypoint.
 
 ## Acceptance
 
-- [ ] Reserved EOB keys documented in OpenSpec and round-tripped in a fixture
-- [ ] Export XML `MessageType` is `OrderOfBattle` or `WorkingEOB`
-- [ ] `EntityID` on every record equals JSON `id`
-- [ ] Airports omitted from threat EOB export
-- [ ] Identity-key match fixture (ELNOT or BE+O_Suffix) as in #16
+- [x] Reserved EOB keys documented in OpenSpec and round-tripped in a fixture (`fixtures/eob_sample.json`)
+- [x] Export XML `MessageType` is `OrderOfBattle` (`POST /api/export/oob`)
+- [x] `EntityID` on every record equals JSON `id`
+- [x] Airports omitted from threat EOB export
+- [x] Identity-key match fixture (ELNOT or BE+O_Suffix) as in #16
+
+Not in this slice: live Redis publish, WorkingEOB_Request server, SignalReport fusion.

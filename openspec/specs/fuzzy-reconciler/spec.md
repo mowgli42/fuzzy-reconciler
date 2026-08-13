@@ -284,6 +284,6 @@ This spec is intentionally self-contained so a new repository can be initialized
 
 ---
 
-**Status**: specified + regional synthetic data tooling on `main` with canonical fixtures and CI unit tests (GitHub issue #11). EOB profile + OrderOfBattle export specified (GitHub #16 + follow-on distro issue); not yet implemented.
+**Status**: specified + regional synthetic data tooling on `main` with canonical fixtures and CI unit tests (GitHub issue #11). EOB profile + `POST /api/export/oob` OrderOfBattle export implemented (GitHub #16 / #19); live bus publish still later.
 
 **Related capabilities**: Could later integrate with orientation-layer style sensemaking for large ambiguous result sets, or human-in-the-loop confirmation queues.

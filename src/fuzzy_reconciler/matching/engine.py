@@ -14,6 +14,7 @@ from fuzzy_reconciler.matching.scoring import (
     name_similarity,
     temporal_score,
 )
+from fuzzy_reconciler.eob import identity_keys_match
 from fuzzy_reconciler.models import (
     Classification,
     CompareResult,
@@ -68,6 +69,12 @@ def classify_pair(
     ):
         return Classification.EXACT_MATCH
 
+    if scores.identity_key_match:
+        # A-GRA identity keys beat name drift (GitHub #16).
+        if date_diff is not None and 0 < date_diff <= config.date_tolerance_days:
+            return Classification.TEMPORAL_VARIANT
+        return Classification.STRONG_FUZZY_MATCH
+
     # Spatial proximity: nearby + attrs match but name differs
     # Check before strong so name-drift cases surface as the intended class.
     # Spec scenario: ~180 m apart within max_geo=300 → geo_score≈0.4; require
@@ -110,6 +117,10 @@ def score_pair(a: Entity, b: Entity, config: MatchConfig) -> ScoreBreakdown:
             attr = max(0.0, attr - 0.1)
     t, date_diff = temporal_score(a.analyzed_at, b.analyzed_at, config.date_tolerance_days)
     composite = composite_score(g, n, attr, t, config)
+    ident = identity_keys_match(a, b)
+    if ident:
+        # ponytail: +0.15 ceiling; production may expose a MatchConfig weight.
+        composite = min(1.0, composite + 0.15)
     return ScoreBreakdown(
         geo_score=round(g, 4),
         name_score=round(n, 4),
@@ -119,6 +130,7 @@ def score_pair(a: Entity, b: Entity, config: MatchConfig) -> ScoreBreakdown:
         geo_distance_m=round(dist, 2) if dist is not None else None,
         date_diff_days=round(date_diff, 2) if date_diff is not None else None,
         name_similarity_pct=round(n * 100, 1),
+        identity_key_match=ident,
     )
 
 

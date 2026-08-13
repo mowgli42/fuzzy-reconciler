@@ -13,6 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from pydantic import BaseModel
+
+from fuzzy_reconciler.eob import build_order_of_battle_xml
 from fuzzy_reconciler.ingest import entities_to_preview, ingest_rows, sniff_and_parse
 from fuzzy_reconciler.matching.engine import compare_lists
 from fuzzy_reconciler.models import (
@@ -208,6 +211,23 @@ def compare_demo(config: MatchConfig | None = None) -> CompareResult:
     list_a = [Entity(**e) for e in data["list_a"]]
     list_b = [Entity(**e) for e in data["list_b"]]
     return compare_lists(list_a, list_b, config or MatchConfig())
+
+
+class OobExportRequest(BaseModel):
+    entities: list[Entity]
+    name: str = "WORKING-EOB"
+    order_of_battle_id: str = ""
+
+
+@api.post("/export/oob")
+def export_oob(req: OobExportRequest) -> dict:
+    """UCI-Lite OrderOfBattle XML. EntityID equals JSON id; airports omitted."""
+    xml = build_order_of_battle_xml(
+        req.entities,
+        order_of_battle_id=req.order_of_battle_id,
+        name=req.name,
+    )
+    return {"messageType": "OrderOfBattle", "xml": xml}
 
 
 app.include_router(api)
