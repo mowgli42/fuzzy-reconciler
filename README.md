@@ -28,7 +28,7 @@ Local-first. No cloud or LLM required for core matching.
 | Showcase maps (all regions; RU 1000 / CN 2000) | Shipped — `docs/REGIONAL-FIXTURES.md` |
 | Vercel deploy (stateless API + browser-local history) | Shipped — see `docs/VERCEL.md` |
 
-Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md` · Regional generator: [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md)
+Living spec: `openspec/specs/fuzzy-reconciler/spec.md` · Gherkin: `features/fuzzy-reconciler.feature` · Beads: `BEADS.md` · Import/compare report: `docs/TEST-REPORT-IMPORT-COMPARE.md` · Regional generator: [`docs/REGIONAL-FIXTURES.md`](docs/REGIONAL-FIXTURES.md) · EOB/UCI export: [`docs/EOB-UCI-CONTRACT.md`](docs/EOB-UCI-CONTRACT.md)
 
 ---
 

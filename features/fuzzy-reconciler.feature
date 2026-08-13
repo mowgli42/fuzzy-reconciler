@@ -81,5 +81,20 @@ Feature: Fuzzy Entity Reconciler
     And manual decisions include actor (local user), timestamp, rationale, and before/after values
     And the reconciled master export is usable directly for downstream import into a master database or GIS tool
 
+  @eob @export
+  Scenario: EOB identity keys round-trip on working-set export
+    Given List A entities with attributes eob_record_id and elnot
+    When I export the reconciled working set as JSON
+    Then those keys are present with the same spellings
+    And entity id is unchanged
+
+  @eob @uci
+  Scenario: Gulf base OrderOfBattle export is ingestible by the planner
+    Given the gulf_base working set
+    When OrderOfBattle XML is exported
+    Then every IADS-class entity has a record whose EntityID matches JSON id
+    And MessageType is OrderOfBattle or WorkingEOB
+    And no airport-only records are included
+
 # Additional scenarios can be added for: error handling on bad uploads, preset loading/saving, ambiguous multi-candidate cases, cluster creation for >2 items, keyboard navigation, dark mode, large file streaming, etc.
 # Map-specific interactions (layer toggle syncs table filter, click marker highlights row and opens detail) should also be covered in UI tests.
