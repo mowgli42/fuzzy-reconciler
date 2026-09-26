@@ -55,6 +55,10 @@ exports/
 playwright-report/
 test-results/
 
+# Secrets (never commit private keys)
+*-key.pem
+*.key
+
 # Large synthetic regional fixtures (regenerate via make fixtures-regions*)
 fixtures/regions/*_base.json
 fixtures/regions/*_delta.json
