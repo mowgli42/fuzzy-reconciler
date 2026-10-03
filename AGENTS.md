@@ -1,100 +1,66 @@
-# Agent Instructions
+# fuzzy-reconciler
 
-This project uses **bd** (beads) for issue tracking. Run `bd prime` for full workflow context.
+Standalone web service for fuzzy comparison of two entity lists (temporal variants and spatial proximity candidates) with an operator UI.
+Stack: Svelte 5 + Vite + Leaflet, FastAPI + Pydantic, browser localStorage (no shared DB on the demo).
+Posture: ponytail (created 2026-07-20, older than 30 days).
+Shared health pack lives in `.cursor/skills/` and `.cursor/rules/` — follow those for [Health] work.
 
-> **Architecture in one line:** Issues live in a local Dolt database
-> (`.beads/dolt/`); cross-machine sync uses `bd dolt push/pull` (a
-> git-compatible protocol), stored under `refs/dolt/data` on your git
-> remote — separate from `refs/heads/*` where your code lives.
-> `.beads/issues.jsonl` is a passive export, not the wire protocol.
->
-> See [SYNC_CONCEPTS.md](https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md)
-> for the one-screen overview and anti-patterns (don't treat JSONL as the
-> source of truth; don't `bd import` during normal operation; don't
-> reach for third-party Dolt hosting before trying the default).
+## Commands
 
-## Quick Reference
+- Dev API: `make backend` (uvicorn `fuzzy_reconciler.api.app:app` on :8010)
+- Dev UI: `make frontend` (Vite on :5173)
+- Install: `make install`
+- Test: `make test` (import samples, then `PYTHONPATH=src .venv/bin/pytest -q`)
+- Test one file: `PYTHONPATH=src .venv/bin/pytest -q tests/test_api.py`
+- Demo data: `make fixtures` then `make demo`
+- Live demo: https://fuzzy-reconciler.vercel.app (`GET /api/health`)
+- Secrets: `bash scripts/scan-secrets.sh .`
+- Beads: `bd ready` — see `BEADS.md`
 
-```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work atomically
-bd close <id>         # Complete work
-bd dolt push          # Push beads data to remote
-```
+## Hard prohibitions
 
-## Secrets
+- Do not commit private keys, `*-key.pem`, `*.key`, `.env` secrets, or `BEGIN … PRIVATE KEY` blobs. Generate credentials locally; gitignore them. Public certs may stay.
+- Do not add a shared database or cloud matcher for the Vercel demo. Decline history stays in the visitor’s browser (`docs/VERCEL.md`).
+- Do not invent routes or Make targets. API surface is under `/api` (`/api/health`, `/api/ingest`, `/api/compare`, `/api/demo`, `/api/presets`).
+- Do not rewrite OpenSpec / Gherkin / Beads to match a hoped-for future. Update them only when code already changed.
+- Do not hand-edit showcase maps under `docs/maps/examples/`. Rebuild with `make fixtures-regions-showcase`.
 
-Do not commit private keys, *-key.pem, *.key, .env secrets, or BEGIN … PRIVATE KEY. Generate locally; gitignore keys.
+## Verify by change type
 
-## Non-Interactive Shell Commands
+| Change | Check |
+| --- | --- |
+| UI / Svelte | `make frontend`, walk Ingest → Configure → Results → Merge |
+| API / FastAPI | `make test` or `curl -s http://127.0.0.1:8010/api/health` |
+| Spec | `openspec/specs/fuzzy-reconciler/spec.md` + `features/fuzzy-reconciler.feature` still true |
+| Deploy | https://fuzzy-reconciler.vercel.app returns 200 and `/api/health` is ok |
+| Secrets | `bash scripts/scan-secrets.sh .` passes |
 
-**ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
+## Source of truth
 
-Shell commands like `cp`, `mv`, and `rm` may be aliased to include `-i` (interactive) mode on some systems, causing the agent to hang indefinitely waiting for y/n input.
+- Behavior: `openspec/specs/fuzzy-reconciler/spec.md` and `features/fuzzy-reconciler.feature`
+- Remaining work: `BEADS.md`, `.beads/`, GitHub issues
+- Demo evidence: `docs/screenshots/`, `docs/VERCEL.md`, `docs/REGIONAL-FIXTURES.md`
+- Health bar: do not duplicate SUCCESS_CRITERIA here
 
-**Use these forms instead:**
-```bash
-# Force overwrite without prompting
-cp -f source dest           # NOT: cp source dest
-mv -f source dest           # NOT: mv source dest
-rm -f file                  # NOT: rm file
+## House vocabulary
 
-# For recursive operations
-rm -rf directory            # NOT: rm -r directory
-cp -rf source dest          # NOT: cp -r source dest
-```
+- Temporal variant — same entity, different analysis dates. Do not call this a duplicate row.
+- Spatial proximity candidate — nearby unmatched records with matching characteristics. Do not call this a join hit.
+- Disposition — merge / temporal update / keep separate, set on the slider then Commit.
+- Decline ledger — browser-local record of prior keep-separate decisions.
+- Working set — published merge-board output (CSV/JSON export).
 
-**Other commands that may prompt:**
-- `scp` - use `-o BatchMode=yes` for non-interactive
-- `ssh` - use `-o BatchMode=yes` to fail instead of prompting
-- `apt-get` - use `-y` flag
-- `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
+## Good / bad (from this repo)
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
-## Beads Issue Tracker
+Bad: treating `.beads/issues.jsonl` as the wire protocol.
+Good: `bd` against the local Dolt DB; JSONL is a passive export.
 
-This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+Bad: editing `docs/maps/examples/china-pair-map.html` by hand.
+Good: `make fixtures-regions-showcase`.
 
-### Quick Reference
+## Borrowed patterns
 
-```bash
-bd ready              # Find available work
-bd show <id>          # View issue details
-bd update <id> --claim  # Claim work
-bd close <id>         # Complete work
-```
-
-### Rules
-
-- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
-- Run `bd prime` for detailed command reference and session close protocol
-- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
-
-**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
-
-## Session Completion
-
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
-
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
-<!-- END BEADS INTEGRATION -->
+- Hard prohibitions from browser-use/browser-use via ossrules.md — short do-not rules for a Python service.
+- Verification by change type from apache/airflow via ossrules.md — UI vs API vs spec vs deploy.
+- Pointing at the source of truth from debpalash/VoiceStudio via ossrules.md — OpenSpec and Gherkin stay authoritative.
+- House vocabulary from apache/airflow via ossrules.md — disposition, decline ledger, and working set are not synonyms.
